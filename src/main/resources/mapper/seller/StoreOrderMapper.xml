@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.seller.dao.SstoreOrderDao">
+
+	<resultMap type="com.example.demo.seller.dto.StoreOrderDto$SellerReadDetailDto" id="ReaddetailMap">
+		<result column="A_DETAIL_CODE" property="aDetailCode"/>
+		<result column="S_MENU_NAME" property="sMenuName"/>
+		<result column="A_COUNT" property="aCount"/>
+	</resultMap>
+	
+	<resultMap type="com.example.demo.seller.dto.StoreOrderDto$SellerListDto" id="ReadMap">
+		<result column="A_ORDER_NUM" property="aOrderNum"/>
+		<result column="A_ORDER_DATE" property="aOrderDate"/>
+		<result column="A_ORDER_STATUS" property="aOrderStatus"/>
+		<result column="A_Delevery_Address" property="aDeleveryAddress"/>
+		<result column="A_DETAIL_ADDRESS" property="aDetailAddress"/>
+		<result column="S_STORE_NUM" property="sStoreNum"/>
+		<result column="A_TOTAL_PRICE" property="aTotalPrice"/>
+		<collection property="readDetail" resultMap="ReaddetailMap"></collection>
+	</resultMap>
+
+	<select id="storeNowOrderlist" resultMap="ReadMap">
+		select  ao.A_ORDER_NUM, ao.A_ORDER_DATE, ao.A_ORDER_STATUS, ao.S_STORE_NUM, ao.A_Delevery_Address,
+		ao.A_TOTAL_PRICE, ao.A_DETAIL_ADDRESS, ao.A_TOTAL_PRICE, sm.S_MENU_NAME ,aod.A_COUNT, aod.A_DETAIL_CODE
+		 from S_STORE ss
+		 left outer join a_order ao on ss.S_STORE_NUM = ao.S_STORE_NUM 
+		 left outer join a_order_detail aod on ao.a_order_num = aod.a_order_num
+		 left outer join s_menu sm on aod.s_menu_code = sm.s_menu_code
+		 left outer join s_menu_group smg on sm.S_GROUP_NUM = smg.s_group_num
+		
+		 where ss.S_STORE_NUM = #{sStoreNum} and ao.A_ORDER_STATUS ='접수대기'
+		 
+		 order by ao.A_ORDER_DATE desc
+	</select>
+	
+	<resultMap type="com.example.demo.seller.dto.StoreOrderDto$SellerReadDetailDto" id="ingReaddetailMap">
+		<result column="A_DETAIL_CODE" property="aDetailCode"/>
+		<result column="S_MENU_NAME" property="sMenuName"/>
+		<result column="A_COUNT" property="aCount"/>
+	</resultMap>
+	
+	<resultMap type="com.example.demo.seller.dto.StoreOrderDto$SellerListDto" id="ingReadMap">
+		<result column="A_ORDER_NUM" property="aOrderNum"/>
+		<result column="A_ORDER_DATE" property="aOrderDate"/>
+		<result column="A_ORDER_STATUS" property="aOrderStatus"/>
+		<result column="A_Delevery_Address" property="aDeleveryAddress"/>
+		<result column="A_DETAIL_ADDRESS" property="aDetailAddress"/>
+		<result column="S_STORE_NUM" property="sStoreNum"/>
+		<result column="A_TOTAL_PRICE" property="aTotalPrice"/>
+		<collection property="readDetail" resultMap="ingReaddetailMap"></collection>
+	</resultMap>
+
+	<select id="storeIngOrderlist" resultMap="ingReadMap">
+		select  ao.A_ORDER_NUM, ao.A_ORDER_DATE, ao.A_ORDER_STATUS, ao.S_STORE_NUM, ao.A_Delevery_Address,
+		ao.A_TOTAL_PRICE, ao.A_DETAIL_ADDRESS, ao.A_TOTAL_PRICE, sm.S_MENU_NAME ,aod.A_COUNT, aod.A_DETAIL_CODE
+		 from S_STORE ss
+		 left outer join a_order ao on ss.S_STORE_NUM = ao.S_STORE_NUM 
+		 left outer join a_order_detail aod on ao.a_order_num = aod.a_order_num
+		 left outer join s_menu sm on aod.s_menu_code = sm.s_menu_code
+		 left outer join s_menu_group smg on sm.S_GROUP_NUM = smg.s_group_num
+		
+		 where ss.S_STORE_NUM = #{sStoreNum} and (ao.A_ORDER_STATUS ='접수완료' or ao.A_ORDER_STATUS ='배달중')
+		 
+		 order by ao.A_ORDER_DATE desc
+	</select>	
+
+	<resultMap type="com.example.demo.seller.dto.StoreOrderDto$SellerReadDetailDto" id="clearReaddetailMap">
+		<result column="A_DETAIL_CODE" property="aDetailCode"/>
+		<result column="S_MENU_NAME" property="sMenuName"/>
+		<result column="A_COUNT" property="aCount"/>
+	</resultMap>
+	
+	<resultMap type="com.example.demo.seller.dto.StoreOrderDto$SellerListDto" id="clearReadMap">
+		<result column="A_ORDER_NUM" property="aOrderNum"/>
+		<result column="A_ORDER_DATE" property="aOrderDate"/>
+		<result column="A_ORDER_STATUS" property="aOrderStatus"/>
+		<result column="A_Delevery_Address" property="aDeleveryAddress"/>
+		<result column="A_DETAIL_ADDRESS" property="aDetailAddress"/>
+		<result column="S_STORE_NUM" property="sStoreNum"/>
+		<result column="A_TOTAL_PRICE" property="aTotalPrice"/>
+		<collection property="readDetail" resultMap="clearReaddetailMap"></collection>
+	</resultMap>
+
+	<select id="storeClearOrderlist" resultMap="clearReadMap">
+		select  ao.A_ORDER_NUM, ao.A_ORDER_DATE, ao.A_ORDER_STATUS, ao.S_STORE_NUM, ao.A_Delevery_Address,
+		ao.A_TOTAL_PRICE, ao.A_DETAIL_ADDRESS, ao.A_TOTAL_PRICE, sm.S_MENU_NAME ,aod.A_COUNT, aod.A_DETAIL_CODE
+		 from S_STORE ss
+		 left outer join a_order ao on ss.S_STORE_NUM = ao.S_STORE_NUM 
+		 left outer join a_order_detail aod on ao.a_order_num = aod.a_order_num
+		 left outer join s_menu sm on aod.s_menu_code = sm.s_menu_code
+		 left outer join s_menu_group smg on sm.S_GROUP_NUM = smg.s_group_num
+		
+		 where ss.S_STORE_NUM = #{sStoreNum} and (ao.A_ORDER_STATUS ='주문취소' or ao.A_ORDER_STATUS ='배달완료')
+		 
+		 order by ao.A_ORDER_DATE desc
+	</select>	
+	
+	<update id="storeOrderStatusChange">
+		update A_ORDER set A_ORDER_STATUS = '접수완료' where (S_STORE_NUM = #{sStoreNum} and A_ORDER_NUM =#{aOrderNum})
+	</update>
+	
+	<update id="storeOrderStatusdelivery">
+		update A_ORDER set A_ORDER_STATUS = '배달중' where (S_STORE_NUM = #{sStoreNum} and A_ORDER_NUM =#{aOrderNum})
+	</update>
+	
+	<update id="storeOrderStatusCansle">
+		update A_ORDER set A_ORDER_STATUS = '주문취소' where (S_STORE_NUM = #{sStoreNum} and A_ORDER_NUM =#{aOrderNum})
+	</update>
+	
+</mapper>

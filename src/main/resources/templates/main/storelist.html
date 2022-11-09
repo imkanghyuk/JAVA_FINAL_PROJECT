@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<script src="/script/consumer/storelist.js"></script>
+<script src="/script/consumer/locationcode.js"></script>
+<script src="/script/consumer/logininfo.js"></script>
+
+<link rel="stylesheet" href="/css/consumer/homecss.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@700&display=swap" rel="stylesheet">
+
+
+<style>
+	#s_bg #section { width: 1000px; margin: 0 auto; padding: 1rem;}
+	#s_bg #section #storelist { width: 900px; display: flex; flex-flow: wrap;}
+	#s_bg #section #storelist .list_store {width: 400px; display: flex; flex-flow: row; border: 1px solid black; margin-left: 20px; margin-bottom: 20px;}
+	#s_bg #section #storelist .list_store:hover {cursor: pointer;}
+	#s_bg #section #storelist .list_store .list_store_logo img {width: 150px; height: 150px; }
+	#s_bg #section #storelist .list_store .list_store_logo { margin-right: 5px;}
+	#s_bg #section #storelist .list_store .list_store_info {display: flex; flex-flow: column;}
+	
+	#a_bg {border-bottom: 1px solid black;}
+	#a_bg #aside {width: 1000px; margin: 0 auto; padding: 1rem; }
+	#a_bg #aside #catelist {display: flex; flex-flow: row; justify-content: space-between;}
+	#a_bg #aside #catelist .catelist_div:hover {cursor: pointer;}
+</style>
+<title>Insert title here</title>
+
+<script>
+	$(document).ready(async function() {
+		
+		await $.ajax({
+			url : "/storeinfo/readcategory",
+			success : function(data){
+				console.log(data)
+				const $calist = "#catelist";
+				
+				for(let i=0; i<data.result.length; i++) {
+					const catelist = $("<div>").attr("class", "catelist_div").attr("value", data.result[i].scategoryNum).appendTo($calist)
+					$("<span>").text(data.result[i].scategoryName).appendTo(catelist)
+				}
+			}
+		})
+		
+		$(document).on("click", ".catelist_div", function(){
+			location.href = "http://localhost:8087/main/storelist?cate=" + $(this).attr("value")
+		})
+	})
+</script>
+
+</head>
+<body>
+	<div id="h_bg">
+		<header id="header" th:replace="/cfragments/header"></header>
+	</div>
+	
+	<div id="n_bg">
+		<nav id="nav" th:replace="/cfragments/nav"></nav>
+	</div>
+	
+	<div id="a_bg">
+		<aside id="aside">
+			<div id="catelist">
+				
+			</div>
+		</aside>
+	</div>
+	
+	<div id="s_bg">
+		<section id="section">
+			<div id="storelist"></div>
+		</section>
+	</div>
+	
+	<div id="f_bg">
+		<footer id="footer" th:replace="/cfragments/footer"></footer>
+	</div>	
+</body>
+</html>

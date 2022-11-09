@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<title>Insert title here</title>
+
+	<style>
+		.nav_info:hover {cursor: pointer;}
+	</style>
+	
+	<script>
+		$(document).ready(function(){
+			$("#sellerinfo").click(function(){
+				location.href = "/seller/seller/sellerread"
+			})
+			
+			$("#storeinfo").click(function(){
+				location.href = "/seller/store/storeread"
+			})
+			
+			$("#orderinfo").click(function(){
+				location.href = "/seller/storemenu/prevstoremenu"
+			})
+			
+			$("#menuinfo").click(function(){
+				location.href = "/seller/storemenu/storemenu"
+			})
+			
+			$("#reviewinfo").click(function(){
+				location.href = "/seller/store/storereivew"
+			})
+		})
+	</script>
+</head>
+<body>
+	<div id="nav">
+		<div id="nav_list">
+			<div id="sellerinfo" class="nav_info">
+				판매자 정보
+			</div>
+			<div id="storeinfo" class="nav_info">
+				가게 정보
+			</div>
+			<div id="orderinfo" class="nav_info">
+				주문 정보	
+			</div>
+			<div id="menuinfo" class="nav_info">
+				메뉴 정보
+			</div>
+			<div id="reviewinfo" class="nav_info">
+				리뷰 관리
+			</div>
+		</div>
+	</div>
+</body>
+</html>

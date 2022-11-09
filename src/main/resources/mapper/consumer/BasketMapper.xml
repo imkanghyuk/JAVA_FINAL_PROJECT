@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.consumer.dao.BasketDao">
+
+	<insert id="cBasketAdd">
+		<selectKey keyProperty="cBasketNum" order="BEFORE" resultType="int">
+			select nvl(max(C_BASKET_NUM), 0)+1 from C_BASKET
+		</selectKey>
+		insert into C_BASKET(C_BASKET_NUM, S_MENU_CODE, S_GROUP_NUM, S_STORE_NUM, C_MENU_COUNT, C_ID) values (#{cBasketNum},
+		#{sMenuCode}, #{sGroupNum}, #{sStoreNum}, #{cMenuCount}, #{cId})
+	</insert>
+	 
+	<select id="cFindByStore" resultType="int">
+		select DISTINCT S_STORE_NUM from C_BASKET where C_ID = #{cId} and rownum &lt;= #{listSize}
+	</select>
+	
+	<select id="cFindByMenu" resultType="int">
+		select S_MENU_CODE from C_BASKET where C_ID = #{cId} and C_BASKET_NUM = #{cBasketNum}
+	</select>
+	
+	<update id="cBasketCountUpdatePlus">
+		update C_BASKET set C_MENU_COUNT = C_MENU_COUNT + 1 where S_MENU_CODE = #{sMenuCode} and C_ID = #{cId}
+	</update>
+	
+	<update id="cBasketCountUpdateMinus">
+		update C_BASKET set C_MENU_COUNT = C_MENU_COUNT - 1 where S_MENU_CODE = #{sMenuCode} and C_ID = #{cId}
+	</update>
+	
+	<delete id="cBasketListDelete">
+		delete from C_BASKET
+		<where>
+			<if test="cId != null and cBasketNum == null">C_ID = #{cId}</if>
+			<if test="cId != null and cBasketNum != null">C_ID = #{cId} and C_BASKET_NUM = #{cBasketNum}</if>
+		</where>
+	</delete>
+ 
+	<select id="cBasketListRead" resultType="com.example.demo.consumer.dto.BasketDto$Read">
+		select cb.C_BASKET_NUM, cb.C_ID, cb.S_MENU_CODE, cb.S_STORE_NUM, cb.S_GROUP_NUM, cb.C_MENU_COUNT,
+		smg.S_GROUP_NAME, sm.S_MENU_NAME, sm.S_MENU_PRICE, sm.S_MENU_IMG, ss.S_STORE_NAME
+		from c_basket cb
+		left outer join s_menu sm on cb.S_MENU_CODE = sm.S_MENU_CODE
+		left outer join s_menu_group smg on sm.S_GROUP_NUM = smg.S_GROUP_NUM
+		left outer join s_store ss on smg.S_STORE_NUM = ss.S_STORE_NUM
+		where cb.C_ID = #{cId} order by cb.C_BASKET_NUM 
+	</select>
+	
+	<select id="cBasketListSize" resultType="int">
+		select count(*) from C_BASKET where C_Id = #{cId}
+	</select>
+	
+	<update id="cBasketPlusCount">
+		update C_BASKET set C_MENU_COUNT = C_MENU_COUNT + #{cMenuCount} where S_MENU_CODE = #{sMenuCode} and C_ID = #{cId}
+	</update>
+	
+	<select id="cBasketDuplicateCheck" resultType="boolean">
+		select count(S_MENU_CODE) from C_BASKET where S_MENU_CODE = #{sMenuCode} and C_ID = #{cId}
+	</select>
+	
+	<select id="cBasketCount" resultType="int">
+		select C_MENU_COUNT from C_BASKET where S_MENU_CODE = #{sMenuCode} and C_ID = #{cId}
+	</select>
+	
+	<select id="cFindByBasketNum" resultType="int">
+		select C_BASKET_NUM from C_BASKET where S_MENU_CODE = #{sMenuCode} and C_ID = #{cId}
+	</select>
+	
+	<select id="mindelevery" resultType="int">
+		select S_MIN_DELEVERY from S_STORE where S_STORE_NUM = #{sStoreNum} and rownum &lt;=1
+	</select>
+	
+</mapper>

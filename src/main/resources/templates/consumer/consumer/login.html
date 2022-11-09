@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<title>Insert title here</title>
+
+<script src="/script/consumer/login.js"></script>
+
+<link rel="stylesheet" href="/css/consumer/homecss.css">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@700&display=swap" rel="stylesheet">
+
+<style>
+	#findmodal {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		background: rgba(255, 255, 255, 0.5);
+		top: 0;
+		left: 0;
+		display: none;
+	}
+	
+	#findmodal_content {
+		border: 1px solid black;
+		width: 400px;
+		height: 400px;
+		background: #fff;
+		border-radius: 10px;
+		position: relative;
+		top: 50%;
+		left: 50%;
+		margin-top: -100px;
+		margin-left: -200px;
+		text-align: center;
+		box-sizing: border-box;
+		padding: 74px 0;
+		line-height: 23px;
+		cursor: pointer;
+	}
+	
+	#f_bg #f_con {width: 1000px; margin: 0 auto; padding: 1rem; display: flex; flex-flow: column;}
+	#f_bg #f_con #form_div {display: flex; flex-flow: column;}
+	#f_bg #f_con #form_div #formdata {display: flex; flex-flow: column; margin: 0 auto;}
+	#f_bg #f_con #form_div #formdata>div {margin: 0 auto;}
+	#f_bg #f_con #form_div #formdata #input_div {display: flex; flex-flow: column; margin-bottom: 20px;}
+	#f_bg #f_con #btn_div {display: flex; flex-flow: row; margin: 0 auto; margin-top: 30px;}
+	#f_bg #f_con #btn_div .btn_div_class {margin-right: 15px;}
+	#f_bg #f_con #btn_div .btn_div_class:last-child {margin-right: 0px;}
+	#f_bg #f_con #form_div #formdata #input_div>span {margin-bottom: 10px; font-size: 20px;}
+	#f_bg #f_con #form_div #formdata #input_div>input {width: 300px; height: 40px; margin-bottom: 20px; font-size: 20px;}
+</style>
+
+<script>
+
+</script>
+
+</head>
+
+<body>
+	<div id="h_bg">
+		<header id="header" th:replace="/cfragments/header"></header>
+	</div>
+	
+	<div id="f_bg">
+		<div id="f_con">
+			<div id="form_div">
+				<form id="formdata" action="/login" method="post">
+					<div id="input_div">
+						<span>아이디</span> <input type="text" name="cId" id="userCid">
+						<span>비밀번호</span> <input type="password" name="cPassword">
+					</div>
+					<div>
+						<button id="login" type="submit" class="btn btn-danger btn-lg"> 로그인 </button>
+					</div>
+				</form>
+			</div>
+			<div id="btn_div">
+				<div class="btn_div_class">
+					<button id="consumerjoin" class="btn btn-danger btn-lg"> 회원가입 </button>
+				</div>
+				<div class="btn_div_class">
+					<button id="finduserid" class="btn btn-danger btn-lg"> 아이디 찾기 </button>
+				</div>
+				<div class="btn_div_class">
+					<button id="finduserpw" class="btn btn-danger btn-lg"> 비밀번호 찾기 </button>
+				</div>
+			</div>				
+		</div>
+	</div>
+		
+	<div id="f_bg">
+		<footer id="footer" th:replace="/cfragments/footer"></footer>
+	</div>		
+		
+		
+	<div id="findmodal" class="modal">
+		<div class="modal_content" id="findmodal_content">
+			<div id="modalheader">
+				<span>입력 정보</span>
+				<button id="closeButton">X</button>
+			</div>
+			<br>
+			<div id="findinfo"></div>
+		</div>
+	</div>
+</body>
+</html>

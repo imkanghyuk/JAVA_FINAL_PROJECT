@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<title>Insert title here</title>
+
+<script src="/script/seller/sellerjoin.js"></script>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"></script>
+
+<style>
+	#sellerformdata {font-size: 30px;}
+</style>
+
+<script>
+</script>
+<link rel="stylesheet" href="/css/seller/login_join.css">
+</head>
+
+<body>
+	<div id="header_bg">
+		<header id="header">
+			<div id="header_logo">
+				<h1> <a href="/seller/seller/login">판매자 센터</a> </h1>
+			</div>
+		</header>
+	</div>
+	
+	<div id="main_bg">
+		<div id="main_main">
+			<div id="content_bg">
+				<div id="form_div2">	
+					<form id="sellerformdata">
+						<div>
+							<span>아이디</span> <input type="text" name="sId" id="sellerid">
+							<span id="selleridcheck"></span>
+						</div>
+						<div>
+							<span>비밀번호</span> <input type="text" name="sPassword" id="sellerpw">
+							<span id="sellerpwcheck"></span>
+						</div>
+						<div>
+							<span>비밀번호 확인</span> <input type="text" id="sellerPasswordcheck">
+							<span id="sellerpwcheck2"></span>
+						</div>		
+						<div>
+							<span>사업자번호</span> <input type="text" name="sBuisnessNum" id="sellerBuis"> 
+							<span id="sellerBuischeck"></span>
+						</div>
+						<div>
+							<span>이름</span> <input type="text" name="sName" id="sellername">
+							<span id="sellernamecheck"></span>
+						</div>
+						<div>
+							<span>생일</span> <input type="date" name="sBirth" id="sellerbirth">
+							<span id="sellerbirthcheck"></span>
+						</div>
+						<div>
+							<span>연락처</span> <input type="text" name="sPhone" id="sellerphone">
+							<span id="sellertelcheck"></span>
+						</div>
+						<div>
+							<span>이메일</span> <input type="text" id="sellermail">
+								<select id="selectsellermail">
+									<option value="@naver.com">네이버</option>
+									<option value="@gmail.com">구글</option>
+									<option value="@daum.net">다음</option>
+								</select>
+								<input type="hidden" name="sEmail" id="sEmailval">
+								<button id="sellermailvaluecheck" type="button" class="btn btn-danger"> 확인 </button>
+							<span id="sellermailcheck"></span>
+						</div>
+					</form>
+					<button id="joinseller" type="button" class="btn btn-danger"> 가입하기 </button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div id="footer_bg">
+		<footer id="footer" th:replace="/sfragments/footer"></footer>
+	</div>		
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<title>Insert title here</title>
+
+<link rel="stylesheet" href="/css/seller/main.css">
+
+	<style>
+		#section_content {display: flex; flex-flow: row;}
+		#store_info{ margin-right: 30px;}
+		#store_add_info { width: 300px;}
+		#storelogo { width: 200px; height: 200px; }
+		#store_status_btn{ width : 150px; }
+		#store_intro_img {display: flex; flex-flow: row; justify-content: space-between;}
+		.store_intro {display: flex; flex-flow: column; margin: 0 auto;}
+		.store_img {width: 150px; height: 150px; margin-left: 10px; border: 1px solid black;}
+		#intro_img_btn_div {margin-top: 20px;}
+		#store_status_btn {margin-top: 30px;}
+	</style>
+
+	<script>
+		
+		$(document).ready(async function(){
+			const getinfo = await $.ajax("/sellerinfo")
+			const storenum = getinfo.result.sStoreNum
+			
+			$.ajax({
+				url : "/seller/storeread",
+				success : function(data){
+					const url = "https://iciasmartframe2.s3.ap-northeast-2.amazonaws.com/upload/seller/storelogo/"
+					$("#sellerid").text(data.result.sid)
+					$("#storename").text(data.result.sstoreName)
+					$("#storeaddress").text(data.result.sstoreAddress)
+					$("#storelogo").attr("src",url + data.result.sstoreLogo)
+					$("#mindelevery").text(data.result.sminDeleVery)
+					$("#storetime").text(data.result.sstoreTime)
+					$("#sStoreIntro").text(data.result.sstoreIntro)
+					if(data.result.sstoreStatus == 0){
+						$("#storestatus").text("영업종료").attr("value", data.result.sstoreStatus)
+					} else {
+						$("#storestatus").text("영업중").attr("value", data.result.sstoreStatus)
+					}
+				}
+			})
+			
+			$.ajax({
+				url : "/seller/store/readintroimg",
+				data : {sStoreNum : storenum},
+				success : function(data){
+					const url = "https://iciasmartframe2.s3.ap-northeast-2.amazonaws.com/upload/seller/storeintro/"
+					if(data.result == null){
+						$("<button>").text("사진추가").attr("id","add_info_img").appendTo("#intro_img_btn_div")
+					} else {
+						for(let i=0; i<data.result.length; i++){
+							$(".store_img_"+i).attr("src", url+data.result[i].sinfoImg)
+						}
+						$("<button>").text("사진삭제").attr("id","del_info_img").appendTo("#intro_img_btn_div")
+					}
+				}
+			})
+		
+			$("#statuschage").click(function(){
+				const storestatus = $("#storestatus").attr("value")
+				$.ajax({
+					url : "/seller/changestatus",
+					data : {sStoreNum : storenum, sStoreStatus : storestatus},
+					method : "put",
+					success : function(data){
+						if(data.result.sstoreStatus == 0){
+							$("#storestatus").text("영업종료").attr("value", data.result.sstoreStatus)
+						} else {
+							$("#storestatus").text("영업중").attr("value", data.result.sstoreStatus)
+						}
+					}
+				})
+			})
+			
+			$('#deleteByStore').click(function(){
+				if(confirm("가게를 삭제하시겠습니까")){
+					$.ajax({
+						url : "/seller/storedelete",
+						data : {sStoreNum : storenum},
+						method : "delete",
+						success : function(data) {
+							alert(data.result)
+							location.href = "/store/storeadd"
+						}
+					})
+				}
+			})
+			
+			$(document).on("click", "#add_info_img", function(){
+				$("#img_info_storenum").attr("value",storenum)
+				const formdata = new FormData($("#store_info_img")[0])
+				
+				$.ajax({
+					url : "/seller/store/addimg",
+					data : formdata,
+					method : "post",
+					processData: false,    
+				    contentType: false,
+				    success : function(data) {
+				    	location.href=location.href
+				    }
+				})
+			})
+
+			$(document).on("click", "#del_info_img", function(){
+				if (confirm("가게 이미지를 삭제하시겠습니까?") ){
+					$.ajax({
+						url : "/seller/store/deleteintroimg",
+						data : {sStoreNum : storenum},
+						method : "delete",
+						success : function(data){
+							alert(data.result)
+							location.href=location.href
+						}
+					})
+				}
+			})
+			
+			
+		})
+	</script>
+
+</head>
+
+<body>
+	<div id="header_bg">
+		<header id="header" th:replace="/sfragments/header"></header>
+	</div>
+	
+	<div id="nav_bg">
+		<div id="nav_content">	
+		<nav id="nav" th:replace="/sfragments/nav"></nav>
+		<section id="section">
+			<div id="section_content">
+				<div id="store_info">
+					<div>
+						<button id="deleteByStore"> 가게 삭제 </button>
+					</div>		
+					
+					<div>
+						<p> 판매자 : <span id="sellerid"></span> </p>
+					</div>
+					<div>
+						<p> 가게 이름 :<span id="storename"></span> </p> 
+					</div>
+					<div>
+						<p> 가게 주소 : </p>
+						<p id="storeaddress"></p>
+					</div>
+					<div>
+						<p> 가게 로고  </p>
+						<img id="storelogo">
+					</div>
+					<div>
+						<p> 최소 주문 금액 : <span id="mindelevery"></span><span> 원</span> </p>
+					</div>
+					<div>
+						<p> 영업 시간 </p>
+						<p id="storetime"></p>
+					</div>
+				</div>
+				
+				<div>
+					<div id="store_add_info">
+						<div>
+							<p> 가게 소개글 : </p>
+							<p id="sStoreIntro"></p> 
+						</div>
+						<div>
+							<p> 가게 이미지 </p>
+							<div id="store_intro_img">
+								<div class="store_intro">
+									<img id="img1" class="store_img store_img_0">
+								</div>
+								<div class="store_intro">
+									<img id="img2" class="store_img store_img_1">
+								</div>
+								<div class="store_intro">
+									<img id="img3" class="store_img store_img_2">
+								</div>
+							</div>
+						</div>
+						<div>
+							<p> 이미지 추가 </p>
+							<form id="store_info_img">
+								<input type="file" name="imginfo">
+								<input type="file" name="imginfo">
+								<input type="file" name="imginfo">
+								<input type="hidden" name="sStoreNum" id="img_info_storenum">
+							</form>
+						</div>
+						<div id="intro_img_btn_div"></div>
+					</div>
+					
+	
+					<div id="store_status_btn">
+						<p> 영업 상태 :  </p>
+						<p id="storestatus"></p>
+						<button id="statuschage"> 변경 </button>
+					</div>
+				</div>
+				</div>
+		</section>
+		</div>
+	</div>
+	
+	<div id="footer_bg">
+		<footer id="footer" th:replace="/sfragments/footer"></footer>
+	</div>
+
+</body>
+</html>

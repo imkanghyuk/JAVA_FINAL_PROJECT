@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.seller.dao.sSellerDao">
+	<insert id="sSellerJoin">
+		insert into S_SELLER_1(S_ID, S_BuisnessNum, S_PASSWORD, S_Name, S_Birth, S_Phone, S_Email) values (#{sId}, #{sBuisnessNum}, #{sPassword}, #{sName}, #{sBirth}, #{sPhone}, #{sEmail})  
+	</insert>
+
+	<select id="sellerAllread" resultType="com.example.demo.seller.entity.Sseller">
+		select * from S_SELLER_1 where S_ID = #{sId}
+	</select>
+	
+	<update id="sSellerUpdate">
+		update S_SELLER_1
+		<trim prefix="set" suffixOverrides=",">
+			<if test="sPassword != null"> S_PASSWORD = #{sPassword}, </if>
+			<if test="sPhone != null"> S_PHONE = #{sPhone}, </if>
+			<if test="sEmail != null"> S_EMAIL = #{sEmail}, </if>
+			<if test="sStoreNum != null"> S_STORE_NUM = #{sStoreNum}</if>
+		</trim>
+		where S_ID = #{sId} 
+	</update>
+	
+	<delete id="sSellerDelete">
+		delete from S_SELLER_1 where S_ID = #{sId}
+	</delete>
+	
+	<select id="sellerread" resultType="com.example.demo.seller.dto.SellerDto$ReadDto">
+		select * from S_SELLER_1 where S_ID = #{sId}
+	</select>
+	
+	<select id="loginseller" resultType="com.example.demo.seller.dto.SellerDto$LoginDto">
+		select S_ID, S_PASSWORD from S_SELLER_1 where S_ID = #{sId}
+	</select>
+	
+	<select id="sellerBuischeck" resultType="Boolean">
+		select count(*) from S_SELLER_1 where S_BuisnessNum = #{sBuisnessNum}
+	</select>
+</mapper>

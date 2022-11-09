@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.seller.dao.SmenuGroupDao">
+
+	<insert id="menugroupadd">
+	<selectKey keyProperty="sGroupNum" order="BEFORE" resultType="int">
+      select nvl(max(S_GROUP_NUM)+1, 1) from S_MENU_GROUP
+    </selectKey>
+		insert into S_MENU_GROUP(S_GROUP_NUM, S_GROUP_NAME, S_STORE_NUM) values (#{sGroupNum}, #{sGroupName}, #{sStoreNum})
+	</insert>
+	
+	<update id="menugroupupdate">
+		update S_MENU_GROUP set S_GROUP_NAME = #{sGroupName} where (S_GROUP_NUM= #{sGroupNum} and S_STORE_NUM = #{sStoreNum})
+	</update>
+
+	<delete id="menugroupdelete">
+		delete from S_MENU_GROUP where S_GROUP_NUM= #{sGroupNum}
+	</delete>	
+
+	<select id="readGroup" resultType="com.example.demo.seller.entity.SmenuGroup">
+		select * from S_MENU_GROUP where S_GROUP_NUM= #{sGroupNum}
+	</select>
+	
+	<select id="readGroupList" resultType="com.example.demo.seller.entity.SmenuGroup">
+		select * from S_MENU_GROUP where S_STORE_NUM = #{sStoreNum}
+	</select>
+</mapper>

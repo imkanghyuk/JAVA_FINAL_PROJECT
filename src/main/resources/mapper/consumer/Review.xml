@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.consumer.dao.AreviewDao">
+
+	<insert id="cReviewWrtie">
+		<selectKey keyProperty="aReviewNum" resultType="int" order="BEFORE">
+			select nvl(max(A_REVIEW_NUM),0)+1 from A_REVIEW
+		</selectKey>
+		insert into A_REVIEW(A_REVIEW_NUM, A_REVIEW, A_NICKNAME, A_SCORE, A_REVIEW_IMG, C_ID, A_ORDER_NUM, S_STORE_NUM)
+		values (#{aReviewNum}, #{aReview}, #{aNickname}, #{aScore}, #{aReviewImg}, #{cId}, #{aOrderNum}, #{sStoreNum})
+	</insert>
+	
+	<resultMap type="String" id="MenuMap">
+		<result column="S_MENU_NAME" property="sMenuName"/>
+	</resultMap>
+	
+	<resultMap type="com.example.demo.consumer.dto.ReviewDto$ListDto" id="AddContentMap">
+		<result column="A_REVIEW" property="aReview"/>
+		<result column="A_NICKNAME" property="aNickname"/>
+		<result column="A_REVIEW_NUM" property="aReviewNum"/>
+		<result column="A_WRITE_DATE" property="aWriteDate"/>
+		<result column="A_SCORE" property="aScore"/>
+		<result column="S_STORE_NUM" property="sStoreNum"/>
+		<result column="A_REVIEW_IMG" property="aReviewImg"/>
+		<result column="A_REPLY_CONTENT" property="aReplyContent"/>
+		<result column="A_REPLY_DATE" property="aReplyDate"/>
+		<collection property="sMenuName" resultMap="MenuMap"></collection>
+	</resultMap>
+	
+	<select id="cReviewRead" resultMap="AddContentMap">
+		select arv.A_NICKNAME, arv.A_REVIEW_NUM, arv.S_STORE_NUM, arv.A_REVIEW, arv.A_WRITE_DATE, arv.A_SCORE, arv.A_REVIEW_IMG, arp.A_REPLY_CONTENT, arp.A_REPLY_DATE, sm.S_MENU_NAME
+		from a_review arv left outer join a_order ao on arv.A_ORDER_NUM = ao.A_ORDER_NUM
+		left outer join a_order_detail aod on arv.A_ORDER_NUM = aod.A_ORDER_NUM
+		left outer join s_menu sm on aod.S_MENU_CODE = sm.S_MENU_CODE
+		left outer join a_reply arp on arv.A_REVIEW_NUM = arp.A_REVIEW_NUM
+		where arv.C_ID = #{cId}	order by arv.A_WRITE_DATE desc	
+	</select>
+	
+	<select id="reviewCheck" resultType="Boolean">
+		select count(*) from A_ORDER ao join A_REVIEW ar on ao.A_ORDER_NUM = ar.A_ORDER_NUM where (ao.A_ORDER_NUM=#{aOrderNum} and ao.C_ID=#{cId} and A_ORDER_STATUS='배달완료') and rownum &lt;= 1
+	</select>
+	
+	<delete id="cReviewDelete">
+		delete from a_review where C_ID=#{cId} and A_REVIEW_NUM=#{aReviewNum}
+	</delete>
+	
+	<delete id="deleteReply">
+		delete from a_reply where A_REVIEW_NUM=#{aReviewNum}
+	</delete>
+</mapper>

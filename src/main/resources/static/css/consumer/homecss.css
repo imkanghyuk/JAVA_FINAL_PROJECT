@@ -1,0 +1,20 @@
+*{margin: 0; padding: 0; font-family: 'Nanum Gothic', sans-serif;}
+ul,li { list-style: none; -webkit-padding-start: 0px;}
+#h_bg { background: #fa0050; padding: 1rem}
+#h_bg #header { width:1000px; margin:0 auto; display: flex; justify-content: space-between; align-items: center;}
+#h_bg #header #header_logo>a>h1 {color: white}
+#h_bg #header ul { display: flex; justify-content: space-between;}
+#h_bg #header ul li a {}
+#h_bg #header ul li { margin-right: 60px;}
+#h_bg #header ul li:last-child { margin-right: 0px;}
+
+#n_bg { background-image: url('https://iciasmartframe2.s3.ap-northeast-2.amazonaws.com/banner/%EB%B0%B0%EB%84%88.jpg'); background-size : cover; }
+#n_bg #nav { width: 1000px; height : 100px; margin: 0 auto; padding: 1rem;}
+#n_bg #nav #location { width: 500px; margin: 0 auto; display: flex; flex-flow: row; margin-top: 15px}
+#n_bg #nav #location #nowloca_btn { margin-right: 10px}
+#n_bg #nav #location #locasearch_bar { width: 400px;}
+#n_bg #nav #location #locasearch_bar>input { width: 400px; text-align: center;}
+
+#f_bg {padding: 1rem; border-top: 1px solid black;}
+#f_bg #footer { width:1000px; margin:0 auto; display: flex; justify-content: space-between; align-items: center; color: #bcbdc5;}
+

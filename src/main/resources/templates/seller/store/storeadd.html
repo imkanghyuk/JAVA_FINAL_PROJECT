@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<title>Insert title here</title>
+
+<script src="/script/seller/storeadd.js"></script>
+
+
+<link rel="stylesheet" href="/css/seller/main.css">
+
+<style>
+	#nav_bg #nav_content #section  button {width:100px; margin: 0 auto;}
+</style>
+
+</head>
+
+<body>
+	<div id="header_bg">
+		<header id="header" th:replace="/sfragments/header"></header>
+	</div>
+
+	<div id="nav_bg">
+		<div id="nav_content">	
+	<nav id="nav" th:replace="/sfragments/nav"></nav>
+		<section id="section">
+			<form id="storeform">
+				<p> 가게 이름 : <input name="sStoreName" type="text"> </p>
+				<p> 가게 주소 : <input id="mainaddress" readonly> <input id="subaddress"> <input name="sStoreAddress" id="storeAddress" type="hidden"> </p>
+				<p> 가게 로고 : <input name="sStoreLogo" type="file"> </p>
+				<p> 최소 주문 금액 : <input name="sMinDeleVery" type="text">원</p>
+				<p> 영업 시간 : 
+					<span> 오픈 <input id="opentime" type="time"> </span>
+					<span> 마감 <input id="closetime" type="time"> </span>
+					<input name="sStoreTime" id="storetime" type="hidden">
+				</p>
+				<p> 가게 소개글 : <input name="sStoreIntro" type="text"> </p>
+				<p> 카테고리 : <input name="sCategoryNum" id="categorynum" type="hidden"> <select id="catesel"></select> </p>
+				<p> 위치 코드 : <input name="sLocationCode" id="locationcode" type="hidden"> <select id="locesel"></select> </p>
+			</form>
+			<button id="storeaddbtn"> 가게 등록 </button>
+		</section>
+		</div>
+	</div>	
+	
+	<div id="footer_bg">
+		<footer id="footer" th:replace="/sfragments/footer"></footer>
+	</div>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<title>Insert title here</title>
+
+<link rel="stylesheet" href="/css/seller/main.css">
+
+<style>
+	img{
+		width: 150px;
+		height: 150px;
+	}
+	
+	#nav_bg #nav_content #section #section_main #section_content #menu_list {display: flex;}
+	
+	#nav_bg #nav_content #section #section_main #section_content #menu_list #menu_content {	display: flex; flex-flow: column; margin: 0 auto; justify-content: space-between;}
+	#nav_bg #nav_content #section #section_main #section_content #menu_list #menu_content .menu_div{ display: flex; border: 1px solid black; margin-top: 15px;	}
+	#nav_bg #nav_content #section #section_main #section_content #menu_list #menu_content .menu_div img{ padding-right: 10px; }
+	#nav_bg #nav_content #section #section_main #section_content #menu_list #menu_content .menu_div .menu_info{	width: 400px;}
+	#nav_bg #nav_content #section #section_main #section_content #menu_list #menu_content .menu_div .menu_info p{ padding-bottom: 15px; }
+	#nav_bg #nav_content #section #section_main #section_content #menu_list #menu_content .menu_div .menu_info p:last-child{ padding-bottom: 0px; }
+	#nav_bg #nav_content #section #section_main #section_content #menu_list #menu_content .menu_div .menu_btn button{ padding: 2px; margin-left: 10px; }
+	#create_menu_btn {display: flex; flex-flow: row; justify-content: space-between;}
+	
+	#menuaddmodal {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		background: rgba(255, 255, 255, 0.5);
+		top: 0;
+		left: 0;
+		display: none;
+	}
+	
+	#menuadd_content {
+		border: 1px solid black;
+		width: 400px;
+		height: 400px;
+		background: #fff;
+		border-radius: 10px;
+		position: relative;
+		top: 50%;
+		left: 50%;
+		margin-top: -100px;
+		margin-left: -200px;
+		text-align: center;
+		box-sizing: border-box;
+		padding: 74px 0;
+		line-height: 23px;
+		cursor: pointer;
+	}
+	
+</style>
+
+</head>
+
+<script>
+
+	$(document).ready(async function(){
+		
+		const getinfo = await $.ajax("/sellerinfo")
+		const storenum = getinfo.result.sStoreNum
+		const menugroupnum = location.search.substring(11) 		
+
+		$.ajax({
+			url : "/seller/menulist",
+			data : {sGroupNum : menugroupnum},
+			success : function(data){
+				console.log(data)
+				const url = "https://iciasmartframe2.s3.ap-northeast-2.amazonaws.com/upload/seller/menuimg/"
+				const $li = "#menu_list"
+				if(data.result.length == 0){
+					$("<h1>").text("등록된 메뉴가 없습니다").appendTo($li)
+					$("<br>").appendTo($li)
+					$("<h1>").text("메뉴를 추가해주세요").appendTo($li)					
+				}
+				else {
+					const $menu = $("<div>").attr("id", "menu_content").appendTo($li)
+					for(let i=0; i<data.result.length; i++){
+						const $div = $("<div>").attr("class", "menu_div").addClass("menu_"+i).appendTo($menu)
+						$("<img>").attr("src", url+data.result[i].smenuImg).appendTo($div)
+						const $info = $("<div>").attr("class", "menu_info").appendTo($div)
+						$("<p>").text("메뉴 이름 : " + data.result[i].smenuName).appendTo($info)
+						$("<p>").text("가격 : " + data.result[i].smenuPrice).appendTo($info)
+						$("<p>").text("메뉴 소개 : " + data.result[i].smenuInfo).appendTo($info)
+						const $btn = $("<div>").attr("class", "menu_btn").appendTo($div)
+						$("<button>").text("수정").attr("class", "updatebtn").attr("value", data.result[i].smenuCode).appendTo($btn)
+						$("<button>").text("삭제").attr("class", "deletebtn").attr("value", data.result[i].smenuCode).appendTo($btn)
+					}
+					
+				}
+			}
+		})
+		
+		$("#menuadd").click(function(){
+			$("#sGroupNum").attr("value",menugroupnum);
+			$("#menuaddmodal").fadeIn();
+		})
+		
+		$(document).on("click", ".closeButton", function(){
+			$(".modal").fadeOut();
+		})		
+		
+		$(document).on("click", "#addmenu", function() {
+			const formdata = new FormData($("#menuaddform")[0])
+			console.log(formdata)
+			$.ajax({
+				url : "/seller/menuadd",
+				data : formdata,
+				method : "post",
+				enctype: 'multipart/form-data',
+			    processData: false,    
+			    contentType: false,
+			    success : function(data) {
+			    	location.href = location.href
+			    }
+			})
+		})
+		
+		$(document).on("click", ".updatebtn", function() {
+			console.log( $(this).val() )
+		})
+		
+		$(document).on("click", ".deletebtn", function() {
+			console.log( $(this).val() )
+			if(confirm("메뉴를 삭제하시겠습니까?")) {
+				$.ajax({
+					url : "/seller/menudelete",
+					data : {sMenuCode : $(this).val()},
+					method : "delete",
+					success : function(data){
+						alert(data.result)
+						location.href = location.href
+					}
+				})
+			} else {}
+		})
+		
+		$("#backpage").click(function(){
+			window.history.back();
+		})
+		
+	})
+</script>
+
+
+<body>
+	<div id="header_bg">
+		<header id="header" th:replace="/sfragments/header"></header>
+	</div>
+
+	<div id="nav_bg">
+		<div id="nav_content">	
+		<nav id="nav" th:replace="/sfragments/nav"></nav>
+		<section id="section">
+			<div id="section_main">
+				<div id="create_menu_btn">
+					<div>
+						<button id="menuadd"> 메뉴 추가하기 </button>
+					</div>
+					<div>
+						<button id="backpage"> 뒤로 가기 </button>
+					</div>
+				</div>
+				<div id="section_content">
+					<div id="menu_list">
+					</div>
+				</div>
+			</div>
+		</section>
+		</div>
+	</div>
+	
+	<div id="footer_bg">
+		<footer id="footer" th:replace="/sfragments/footer"></footer>
+	</div>
+
+
+	<div id="menuaddmodal" class="modal">
+		<div class="modal_content" id="menuadd_content">
+			<div class="modalheader">
+				<span>수정 내용 입력</span>
+				<button class="closeButton">X</button>
+			</div>
+			<br>
+			<div id="menuaddinfo">
+				<form id="menuaddform">
+					<div>
+						<span> 메뉴 이름 </span>
+						<input type="text" id="sMenuName" name="sMenuName">
+					</div>
+					<div>
+						<span> 메뉴 정보 </span>
+						<input type="text" id="sMenuInfo" name="sMenuInfo"> 
+					</div>
+					<div>
+						<span> 메뉴 사진 </span>
+						<input type="file" id="sMenuImg" name="sMenuImg">
+					</div>
+					<div>
+						<span> 메뉴 가격 </span>
+						<input type="text" id="sMenuPrice" name="sMenuPrice">
+					</div>
+					<div>
+						<input type="hidden" id="sGroupNum" name="sGroupNum">
+					</div>				
+				</form>
+				<div>
+					<button id="addmenu"> 메뉴추가하기 </button>
+				</div>		
+			</div>
+		</div>
+	</div>
+			
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<title>Insert title here</title>
+
+<link rel="stylesheet" href="/css/seller/main.css">
+
+<style>
+	
+	#nav_bg #nav_content #section #section_main #section_content #menugroup_list {
+		display: flex; flex-flow: column;
+	}
+	
+	#nav_bg #nav_content #section #section_main #section_content #menugroup_list .store_menugroup {
+		width: 600px; display: flex; cursor: pointer;
+	}
+	#nav_bg #nav_content #section #section_main #section_content #menugroup_list .store_menugroup .smenugroupname {
+		width: 600px; display: flex; flex-flow: row; justify-content: space-between; margin: 0; border: 1px solid black; margin-bottom: 10px;
+	}
+	
+	#menugorupadd {margin-bottom: 20px;}	
+	
+	#menugroup_list .store_menugroup .smenugroupname>h1 {margin-left: 20px; margin-top: 10px;}
+	
+	.groupUpdate {margin-top: 5px; margin-bottom: 15px; margin-right: 10px;}
+	
+	.groupDelete {margin-bottom: 5px;}
+	
+	#mgaddmodal {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		background: rgba(255, 255, 255, 0.5);
+		top: 0;
+		left: 0;
+		display: none;
+	}
+	
+	#mgadd_content {
+		border: 1px solid black;
+		width: 400px;
+		height: 400px;
+		background: #fff;
+		border-radius: 10px;
+		position: relative;
+		top: 50%;
+		left: 50%;
+		margin-top: -100px;
+		margin-left: -200px;
+		text-align: center;
+		box-sizing: border-box;
+		padding: 74px 0;
+		line-height: 23px;
+		cursor: pointer;
+	}
+	
+	#mgupdatemodal {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		background: rgba(255, 255, 255, 0.5);
+		top: 0;
+		left: 0;
+		display: none;
+	}
+	
+	#mgupdate_content {
+		border: 1px solid black;
+		width: 400px;
+		height: 400px;
+		background: #fff;
+		border-radius: 10px;
+		position: relative;
+		top: 50%;
+		left: 50%;
+		margin-top: -100px;
+		margin-left: -200px;
+		text-align: center;
+		box-sizing: border-box;
+		padding: 74px 0;
+		line-height: 23px;
+		cursor: pointer;
+	}
+	
+</style>
+
+</head>
+
+<script>
+	$(document).ready(async function(){
+		
+		const getinfo = await $.ajax("/sellerinfo")
+		const storenum = getinfo.result.sStoreNum
+		
+		$.ajax({
+			url : "/seller/menugroup/storemglist",
+			data : {sStoreNum : storenum},
+			success : function(data){
+				const $li = "#menugroup_list"
+				if(data.result == null){
+					$("<h1>").text("등록된 메뉴 그룹이 없습니다").appendTo($li)
+					$("<h1>").text("메뉴 그릅을 추가해주세요").appendTo($li)
+				}
+				else {
+					for(let i=0;i<data.result.length; i++){
+						const $div = $("<div>").attr("class", "store_menugroup").addClass("group_"+i).appendTo($li)
+						const $name = $("<div>").attr("class", "smenugroupname").attr("value", data.result[i].sgroupNum).appendTo($div);
+						$("<h1>").text(data.result[i].sgroupName).appendTo($name);
+						const $budiv = $("<div>").attr("class","button_parent").appendTo($name);
+						const up = $("<div>").attr("class", "group_up").appendTo($budiv);
+						$("<button>").text("수정하기").attr("class", "groupUpdate").attr("value", data.result[i].sgroupNum).appendTo(up);
+						const de = $("<div>").attr("class", "group_de").appendTo($budiv);
+						$("<button>").text("삭제하기").attr("class", "groupDelete").attr("value", data.result[i].sgroupNum).appendTo(de);
+					}
+					
+				}
+			}
+		})
+		
+		$("#storenumber").attr("value", storenum)
+		
+		$("#menugorupadd").click(function(){
+	
+			$("#mgaddmodal").fadeIn();
+		})
+		
+		$(document).on("click", ".closeButton", function(){
+			$(".modal").fadeOut();
+		})
+		
+		$("#addgroup").click(function(){
+			if($("#sGroupName").val()==''){
+				alert("메뉴 그룹명을 입력해 주세요")
+			} else{
+				
+				const param = {
+					sGroupName : $("#sGroupName").val(),
+					sStoreNum : $("#storenumber").val()
+				}
+				
+				$.ajax({
+					url : "/seller/menugroup/add",
+					data : param,
+					method : "post",
+					success : function(data){
+						alert (data.result)
+						location.href = location.href
+					}
+				})
+			}
+		})
+		
+		$(document).on("click",".smenugroupname",function(){
+			location.href = "/seller/storemenu/storemenulist?menugroup=" + $(this).attr("value")
+		}) 
+		
+		$(document).on("click",".groupUpdate",function(e){
+			e.stopPropagation()
+			$("#storenumber_update").attr("value", $(this).val())
+			$("#mgupdatemodal").fadeIn();
+		})
+		
+		$(document).on("click","#updategroup",function(){
+			if($("#newGroupName").val()==''){
+				alert("메뉴 그룹명을 입력해 주세요")
+			} else{
+				const param = {
+					sGroupNum : $("#storenumber_update").val(),
+					sGroupName : $("#newGroupName").val()
+				}
+				
+				$.ajax({
+					url : "/seller/menugroup/update",
+					data : param,
+					method : "put",
+					success : function() {
+						location.href = location.href
+					}
+				})
+			}
+		})
+		
+		$(document).on("click",".groupDelete",function(e){
+			e.stopPropagation()
+			if( confirm("메뉴 그릅을 삭제하시겠습니까?") ){
+				$.ajax({
+					url : "/seller/menugroup/delete",
+					data : {sGroupNum : $(this).val()},
+					method : "delete",
+					success : function(data) {
+						alert(data.result)
+						location.href = location.href						
+					}
+				})
+			} else {
+				
+			}
+
+		})
+	})
+</script>
+
+
+<body>
+	<div id="header_bg">
+		<header id="header" th:replace="/sfragments/header"></header>
+	</div>
+
+	<div id="nav_bg">
+		<div id="nav_content">	
+		<nav id="nav" th:replace="/sfragments/nav"></nav>
+		<section id="section">
+			<div id="section_main">
+				<div id="create_menu">
+					<button id="menugorupadd"> 메뉴 그룹 추가하기 </button>
+				</div>
+				<div id="section_content">
+					<div id="menugroup_list">
+					</div>
+				</div>
+			</div>
+		</section>
+		</div>
+	</div>
+	
+	<div id="footer_bg">
+		<footer id="footer" th:replace="/sfragments/footer"></footer>
+	</div>
+
+
+
+
+	<div id="mgaddmodal" class="modal">
+		<div class="modal_content" id="mgadd_content">
+			<div class="modalheader">
+				<span>수정 내용 입력</span>
+				<button class="closeButton">X</button>
+			</div>
+			<br>
+			<div id="mgaddinfo">
+				<div>
+					<span> 그룹 이름 <input type="text" id="sGroupName"> </span>
+					<input type="hidden" id="storenumber">
+				</div>
+				<div>
+					<button id="addgroup"> 생성하기 </button>
+				</div>		
+			</div>
+		</div>
+	</div>
+	
+		<div id="mgupdatemodal" class="modal">
+		<div class="modal_content" id="mgupdate_content">
+			<div class="modalheader">
+				<span>입력 정보</span>
+				<button class="closeButton">X</button>
+			</div>
+			<br>
+			<div id="mgupdate">
+				<div>
+					<span> 그룹 이름 <input type="text" id="newGroupName"> </span>
+					<input type="hidden" id="storenumber_update">
+				</div>
+				<div>
+					<button id="updategroup"> 수정하기 </button>
+				</div>		
+			</div>
+		</div>
+	</div>
+			
+</body>
+</html>

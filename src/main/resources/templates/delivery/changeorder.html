@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<title>Insert title here</title>
+
+<style>
+	*{margin: 0; padding: 0;}
+	#deliverylist {display: flex; flex-flow: column; width: 900px; margin-top: 30px;}
+	#deliverylist .delivery_div {display: flex; flex-flow: row; width: 800px; justify-content: space-between; border: 1px solid black; margin-bottom: 20px;}
+	#deliverylist .delivery_div .deliinfo_aorderStatus {text-align: center;} 
+	#deliverylist .delivery_div .deliinfo_info {width: 550px;}
+	#option {margin-top: 15px; margin-bottom: 15px;}
+	#option_select {font-size: 30px;}
+</style>
+
+<script>
+	$(document).ready(function(){
+		$.ajax({
+			url : "/seller/location",
+			success : function(data){
+				const $1 = "#option_select"
+
+				for(let i=0; i<data.result.length; i++){
+					$("<option>").text(data.result[i].slocationName).attr("value",data.result[i].slocationCode).appendTo($1)	
+				}
+			}
+		}) 			 
+				
+		$(document).on("change", "#option_select" ,function(){
+			$("#deliverylist").empty()
+			if($(this).val()==0){
+				
+			} else {
+			$.ajax({
+				url : "/delivery/list",
+				data : {sLocationCode : $(this).val()},
+				success : function(data){
+					for(let i=0; i<data.length; i++){
+						const $ddiv = $("<div>").attr("class", "delivery_div").addClass("ddiv_"+i).appendTo("#deliverylist")
+							
+						const $div1 = $("<div>").attr("class","deliinfo_aorderStatus").appendTo($ddiv)
+							$("<p>").text(data[i].aorderStatus).appendTo($div1)
+						const $infodiv = $("<div>").attr("class","deliinfo_info").appendTo($ddiv)
+							const $div2 = $("<div>").attr("class","deliinfo_aorderDate").appendTo($infodiv)
+								$("<p>").text("주문일시 : " + data[i].aorderDate).appendTo($div2)
+							const $div3 = $("<div>").attr("class","deliinfo_Address").appendTo($infodiv)
+								$("<p>").text("배달 주소 : " + data[i].adeleveryAddress + " " + data[i].adetailAddress).appendTo($div3)
+							const $div4 = $("<div>").attr("class","deliinfo_sstoreName").appendTo($infodiv)
+								$("<p>").text("가게 이름 : " + data[i].sstoreName).appendTo($div4)
+							const $div5 = $("<div>").attr("class","deliinfo_sstoreAddress").appendTo($infodiv)
+								$("<p>").text("가게 주소 : " + data[i].sstoreAddress).appendTo($div5)						
+						const $div6 = $("<div>").attr("class","deliinfo_btn").appendTo($ddiv)
+							$("<button>").text("배달 완료").attr("class", "update_btn").attr("value",data[i].aorderNum).appendTo($div6)
+				}}})
+			}
+		})
+		
+		$(document).on("click", ".update_btn", function() {
+			$.ajax({
+				url : "/delivery/chage",
+				data : {aOrderNum : $(this).val()},
+				method : "put",
+				success : function(data) {
+					alert(data)
+					location.href = location.href
+				}	
+			})
+		})
+	})
+</script>
+
+</head>
+
+<body>
+	<div id="header_bg">
+		<header id="header">
+			<h1> 배달기사 페이지</h1>
+		</header>
+	</div>
+	
+	<div id="nav_bg">
+		<div id="nav_content">
+		<nav id="nav"></nav>
+		
+		<section id="section">
+			<div>
+				<div id="option">
+					<select id="option_select">
+						<option value="0" selected>-- 배달지역을 선택하세요 --</option>
+					</select>
+				</div>
+			</div>
+			<div>
+				<div id="deliverylist">	</div>
+			</div>
+		</section>
+		</div>
+	</div>
+	
+	<div id="footer_bg">
+		<footer id="footer" ></footer>
+	</div>
+</body>
+</html>

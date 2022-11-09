@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<title>Insert title here</title>
+
+<link rel="stylesheet" href="/css/seller/main.css">
+
+<style>
+	img {width: 100px; height: 100px;}	
+	
+	#replyaddmodal {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		background: rgba(255, 255, 255, 0.5);
+		top: 0;
+		left: 0;
+		display: none;
+	}
+	
+	#replyadd_content {
+		border: 1px solid black;
+		width: 400px;
+		height: 400px;
+		background: #fff;
+		border-radius: 10px;
+		position: relative;
+		top: 50%;
+		left: 50%;
+		margin-top: -100px;
+		margin-left: -200px;
+		text-align: center;
+		box-sizing: border-box;
+		padding: 74px 0;
+		line-height: 23px;
+		cursor: pointer;
+	}
+	.review_list {display: flex; flex-flow: row; border: 1px solid black; justify-content: space-between;}
+	.review_info {width: 500px;}
+	.reply_div {display: flex; flex-flow: row; justify-content: space-between; border: 1px solid black;}
+	.reply_content{width: 500px;}
+</style>
+
+<script>
+
+	$(document).ready(async function() {
+		const getinfo = await $.ajax("/sellerinfo")
+		const storenum = getinfo.result.sStoreNum
+		const url = "https://iciasmartframe2.s3.ap-northeast-2.amazonaws.com/upload/consumer/review/"
+		$.ajax({
+			url : "/seller/store/reviewread",
+			data : {sStoreNum : storenum},
+			success : function(data){
+				console.log(data)
+				const $section = "#section"
+				for(let i=0; i<data.result.length; i++) {
+					const $div = $("<div>").attr("class", "review_list").appendTo($section)
+					
+						const $3 = $("<div>").attr("class","div_areviewImg").addClass("review"+i).appendTo($div)
+							$("<img>").attr("src",url + data.result[i].areviewImg).appendTo($3)
+						const $info = $("<div>").attr("class", "review_info").appendTo($div)	
+						const $1 = $("<div>").attr("class","div_anickname").addClass("review"+i).appendTo($info)
+							$("<p>").text("닉네임 : " + data.result[i].anickname).appendTo($1)
+						const $2 = $("<div>").attr("class","div_awriteDate").addClass("review"+i).appendTo($info)
+							$("<p>").text(data.result[i].awriteDate).appendTo($2)
+						const $4 = $("<div>").attr("class","div_areview").addClass("review"+i).appendTo($info)
+							$("<p>").text(data.result[i].areview).appendTo($4)
+						const $5 = $("<div>").attr("class","div_ascore").addClass("review"+i).appendTo($info)
+							$("<p>").text("평점 : " + data.result[i].ascore).appendTo($5)
+							
+						const $6 = $("<div>").attr("class","div_reply").addClass("review"+i).appendTo($div)
+						if(data.result[i].reply[0].areplyNum == null){
+							$("<button>").attr("class","reply_btn").attr("value",data.result[i].reply[0].areviewNum).text("답글 달기").appendTo($6)
+						} else {
+							const rediv = $("<div>").attr("class", "reply_div").appendTo($section)
+								const $7 = $("<div>").attr("class","div_reply_1").appendTo(rediv)
+									$("<span>").text("사장님 답글").appendTo($7)
+								const $8 = $("<div>").attr("class","div_reply_1").addClass("reply_content").appendTo(rediv)
+									$("<p>").text(data.result[i].reply[0].areplyContent).appendTo($8)
+								const $9 = $("<div>").attr("class","div_reply_1").appendTo(rediv)
+									$("<button>").text("답글 삭제").attr("value",data.result[i].reply[0].areplyNum).attr("class", "deletReply").appendTo($9)
+						}
+				}
+				
+			}
+		})
+		$(document).on("click", ".reply_btn", function(){
+			$("#reviewnum").attr("value", $(this).val())
+			$("#replyaddmodal").fadeIn();
+		})
+		
+		$(document).on("click", ".closeButton", function(){
+			$(".modal").fadeOut();
+		})
+		
+		$("#replyaddp").click(function(){
+			$.ajax({
+				url : "/seller/store/replyadd",
+				data : {aReviewNum : $("#reviewnum").val(), aReplyContent : $("#aReplyContent").val()},
+				method : "post",
+				success : function(){
+					location.href = location.href
+				}
+			})			
+		})
+		
+		$(document).on("click", ".deletReply", function(){
+			if (confirm("답글을 삭제하시겠습니까?") ) {
+				$.ajax({
+					url : "/seller/store/replydelete",
+					data : {aReplyNum : $(this).val()},
+					method : "delete",
+					success : function(){
+						location.href = location.href
+					}
+				})
+			}
+		})
+		
+	})
+</script>
+
+</head>
+
+<body>
+	<div id="header_bg">
+		<header id="header" th:replace="/sfragments/header"></header>
+	</div>
+	
+	<div id="nav_bg">
+		<div id="nav_content">
+		<nav id="nav" th:replace="/sfragments/nav"></nav>
+		
+		<section id="section">
+		</section>
+		</div>
+	</div>
+	
+	<div id="footer_bg">
+		<footer id="footer" th:replace="/sfragments/footer"></footer>
+	</div>
+	
+	<div id="replyaddmodal" class="modal">
+		<div class="modal_content" id="replyadd_content">
+			<div class="modalheader">
+				<span>답글 입력</span>
+				<button class="closeButton">X</button>
+			</div>
+			<br>
+			<div id="replyinfo">
+				<div>
+					<span> 답글 내용 <input type="text" id="aReplyContent"> </span>
+					<input type="hidden" id="reviewnum">
+				</div>
+				<div>
+					<button id="replyaddp"> 답글작성 </button>
+				</div>		
+			</div>
+		</div>
+	</div>		
+</body>
+</html>

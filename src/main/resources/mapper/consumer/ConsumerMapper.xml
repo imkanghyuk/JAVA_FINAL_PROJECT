@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.consumer.dao.ConsumerDao">
+
+	<insert id="cMemberJoin">
+		insert into C_CONSUMER(C_ID, C_PASSWORD, C_NICKNAME, C_NAME, C_BIRTH, C_PHONE, C_EMAIL, C_PROFILEIMG, C_LEVEL)
+		values (#{cId}, #{cPassword}, #{cNickname}, #{cName}, #{cBirth}, #{cPhone}, #{cEmail}, #{cProfileImg}, #{cLevel})
+	</insert>
+	
+	<update id="cMemberUpdate">
+		update C_CONSUMER 
+		<trim prefix="set" suffixOverrides=",">
+			<if test="cPassword != null"> C_PASSWORD = #{cPassword}, </if>
+			<if test="cNickname != null"> C_NICKNAME = #{cNickname}, </if>
+			<if test="cEmail != null"> C_EMAIL = #{cEmail}, </if>
+			<if test="cProfileImg != null"> C_PROFILEIMG = #{cProfileImg}, </if>
+		</trim>
+		
+		where C_ID = #{cId}
+	</update>
+	
+	<select id="BuyCount" resultType="int">
+		select count (*) from A_ORDER where C_ID = #{cId} and A_ORDER_STATUS = #{aOrderStatus}
+	</select>
+	
+	<select id="cMemberInforRead" resultType="com.example.demo.consumer.dto.ConsumerDto$ConsumerRead">
+		select C_ID, C_NICKNAME, C_NAME, C_BIRTH, C_JOINDAY, C_PHONE, C_EMAIL, C_PROFILEIMG, C_LEVEL from C_CONSUMER where C_ID = #{cId} and rownum &lt;= 1
+	</select>
+	
+	<select id="cIdOverlap" resultType="Boolean">
+		select count(*) from C_CONSUMER where C_ID = #{cId} and rownum &lt;= 1
+	</select>
+	
+	<select id="cNickOverlap" resultType="Boolean">
+		select count(*) from C_CONSUMER where C_NICKNAME = #{cNickname} and rownum &lt;= 1
+	</select>
+	
+	<select id="cEmailOverlap" resultType="Boolean">
+		select count(*) from C_CONSUMER where C_EMAIL = #{cEmail} and rownum &lt;= 1
+	</select>
+	
+	<select id="cFindById" resultType="String">
+		select C_ID from C_CONSUMER where C_EMAIL = #{cEmail} and rownum &lt;= 1
+	</select>
+	
+	<delete id="cMemberClear">
+		delete from C_CONSUMER where C_ID = #{cId}
+	</delete>
+	
+	<select id="scCheck" resultType="com.example.demo.consumer.dto.ConsumerDto$UserDto">
+		select * from C_CONSUMER where C_ID = #{cId} and rownum &lt;= 1
+	</select>
+	
+	<select id="findDate" resultType="com.example.demo.consumer.dto.ConsumerDto$dateDto">
+		SELECT ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -1) AS startdate, LAST_DAY(TRUNC(SYSDATE, 'MM')-1) AS enddate FROM dual
+	</select>
+	
+	<select id="myordercount" resultType="int">
+		select count(*) from A_ORDER where C_ID=#{cId} and a_order_status='배달완료' and a_order_date BETWEEN #{startdate} and #{enddate}
+	</select>
+	
+	<update id="levelupdate">
+		update C_CONSUMER set C_LEVEL = #{cLevel} where C_ID = #{cId}
+	</update>
+	
+	<select id="userdataall" resultType="com.example.demo.consumer.entity.Consumer">
+		SELECT * FROM C_CONSUMER WHERE C_ID=#{cId}
+	</select>
+	
+	<update id="deleteUserChange">
+		update C_ORDER set C_ID = #{newCid} where C_ID = #{cId}	
+	</update>
+
+</mapper>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.consumer.dao.OrderDetailDao">
+
+	<insert id="cOrderDetailSave">
+		<selectKey keyProperty="aDetailCode" order="BEFORE" resultType="int">
+			select nvl(max(A_DETAIL_CODE), 0)+1 from A_ORDER_DETAIL
+		</selectKey>	
+		insert into A_ORDER_DETAIL(A_DETAIL_CODE, A_ORDER_NUM, S_MENU_CODE, S_GROUP_NUM, A_COUNT)
+		values (#{aDetailCode}, #{aOrderNum}, #{sMenuCode}, #{sGroupNum}, #{aCount})
+	</insert>
+	
+	<delete id="cOrderDetailDelete">
+		delete from A_ORDER_DETAIL where C_ID = #{cId}
+	</delete>
+	
+	<select id="basketListGet" resultType="com.example.demo.consumer.dto.BasketDto$List">
+		select S_MENU_CODE, S_GROUP_NUM, C_MENU_COUNT from C_BASKET where C_ID = #{cId}
+	</select>
+	
+	<select id="menuPriceCountGet" resultType="com.example.demo.consumer.dto.OrderDetailDto$PriceDto">
+		select aod.S_MENU_CODE, aod.A_COUNT, sm.S_MENU_PRICE from a_order_detail aod left outer join s_menu sm on aod.S_MENU_CODE = sm.S_MENU_CODE
+		left outer join A_ORDER ao on ao.A_ORDER_NUM = aod.A_ORDER_NUM where aod.A_ORDER_NUM = #{aOrderNum} and ao.C_ID = #{cId} 
+	</select>
+	
+	<select id="OrderDetailByOrder" resultType="int">
+		select count(*) from A_ORDER_DETAIL where A_ORDER_NUM = #{aOrderNum}
+	</select>
+			
+</mapper>

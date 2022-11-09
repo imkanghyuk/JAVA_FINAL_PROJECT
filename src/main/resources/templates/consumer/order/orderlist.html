@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<script src="/script/consumer/orderlist.js"></script>
+
+<title>Insert title here</title>
+
+<style>
+#ordermodal {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background: rgba(255, 255, 255, 0.5);
+	top: 0;
+	left: 0;
+	display: none;
+}
+
+#ordermodal_content {
+	border: 1px solid black;
+	width: 400px;
+	height: 400px;
+	background: #fff;
+	border-radius: 10px;
+	position: relative;
+	top: 50%;
+	left: 50%;
+	margin-top: -100px;
+	margin-left: -200px;
+	text-align: center;
+	box-sizing: border-box;
+	padding: 74px 0;
+	line-height: 23px;
+	cursor: pointer;
+}
+
+#reviewmodal {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background: rgba(255, 255, 255, 0.5);
+	top: 0;
+	left: 0;
+	display: none;
+}
+
+#reviewmodal_content {
+	border: 1px solid black;
+	width: 400px;
+	height: 400px;
+	background: #fff;
+	border-radius: 10px;
+	position: relative;
+	top: 50%;
+	left: 50%;
+	margin-top: -100px;
+	margin-left: -200px;
+	text-align: center;
+	box-sizing: border-box;
+	padding: 74px 0;
+	line-height: 23px;
+	cursor: pointer;
+}
+
+.starR{
+  background: url('http://miuu227.godohosting.com/images/icon/ico_review.png') no-repeat right 0;
+  background-size: auto 100%;
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+  text-indent: -9999px;
+  cursor: pointer;
+}
+.starR.on{background-position:0 0;}
+
+
+#list_div {display: flex; flex-flow: row; justify-content: space-between; margin-top: 30px;}
+#list_1_title, #list_2_title {margin-bottom: 30px;}
+.nowlistdiv, .beforelistdiv {border: 1px solid black; margin-bottom: 10px; width: 280px; display: flex; flex-flow: column; justify-content: space-between;}
+
+</style>
+
+<script>
+	
+</script>
+
+</head>
+<body>
+	<div id="list_div">
+		<div id="list_1">
+			<div id="list_1_title"> 현재 주문 내역 </div>
+			<div id="noworderlist"></div>
+		</div>
+		<div id="list_2">
+			<div id="list_2_title"> 이전 주문 내역 </div>
+			<div id="beforeorderlist"></div>
+		</div>
+	</div>
+	
+	
+	<div id="ordermodal" class="modal">
+		<div class="modal_content" id="ordermodal_content">
+			<div id="modalheader">
+				<span>상세 정보</span>
+				<button id="closeButton">X</button>
+			</div>
+			<div id="orderdetaillist">
+			</div>
+		</div>
+	</div>
+	
+	<div id="reviewmodal" class="modal">
+		<div class="modal_content" id="reviewmodal_content">
+			<div id="modalheader">
+				<span>리뷰 작성</span>
+				<button id="closeButton">X</button>
+			</div>
+			<div id="reviewinfo">
+				<form id="reviewform">
+					<div class="starRev">
+					  <span class="starR on" value="1">★</span>
+					  <span class="starR" value="2">★</span>
+					  <span class="starR" value="3">★</span>
+					  <span class="starR" value="4">★</span>
+					  <span class="starR" value="5">★</span>
+					</div>
+					<p> 평점 : <span id="starpoint" >1</span> </p>
+					<input type="hidden" value="1" name="aScore" id="score">
+					<input name="aReview" type="text">
+					<input type="hidden" name="sStoreNum" id="storenumber">
+					<input type="hidden" name="aOrderNum" id="ordernumber">
+					<p> <input type="file" name="aReviewImg"> </p>
+				</form>
+				<button id="reviewinsert"> 작성하기 </button>
+			</div>
+		</div>
+	</div>		
+</body>
+</html>
+

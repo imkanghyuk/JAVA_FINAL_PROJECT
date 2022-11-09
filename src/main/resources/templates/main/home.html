@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+
+<link rel="stylesheet" href="/css/consumer/homecss.css">
+
+<script src="/script/consumer/logininfo.js"></script>
+<script src="/script/consumer/locationcode.js"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@700&display=swap" rel="stylesheet">
+
+<title>Insert title here</title>
+
+<style>
+	#s_bg #section { width: 1000px; margin: 0 auto;}
+	#s_bg #section #categoryList { width: 900px; margin: 0 auto; display: flex; flex-flow: wrap;}
+	#s_bg #section #categoryList .cate_div { width: 300px; height: 300px; position: relative; }
+	#s_bg #section #categoryList .cate_div .cate_main_div { width : 250px; height: 250px; top: 23%; left: 8%; margin: -50px 0 -50px; position: absolute; border: 1px solid black; }
+	#s_bg #section #categoryList .cate_div .cate_main_div>a {text-decoration: none;}
+	#s_bg #section #categoryList .cate_div .cate_main_div:hover {cursor: pointer;}
+	#s_bg #section #categoryList .cate_div .cate_main_div img { position: relative; left: 18.6%;	top: -0.5%; height: 200px;}
+	#s_bg #section #categoryList .cate_div .cate_main_div p {margin-left: 15px; margin-top: 5px; font-size: 110%;}
+</style>
+
+<script>
+
+	async function printcategorylist() {
+		const list = await $.ajax({
+			url : "/storeinfo/readcategory"
+		})    
+		const url = "https://iciasmartframe2.s3.ap-northeast-2.amazonaws.com/cateimg/";
+		
+		const catediv = $("<div>").attr("id","categoryList").appendTo('#section');
+		for(const listca of list.result) {
+			const $cadiv = $("<div>").attr("class","cate_div").appendTo(catediv)
+			const $camaindiv = $("<div>").attr("class","cate_main_div").attr("value", listca.scategoryNum).appendTo($cadiv)
+			$("<p>").text(listca.scategoryName).appendTo($camaindiv);
+			$("<img>").attr("src", url+listca.scategoryName+".png").appendTo($camaindiv)
+		}	
+	}
+	
+	$(document).ready(async function() {
+		await printcategorylist();
+		
+		$(document).on("click", ".cate_main_div", function() {
+			if($('#nowlocation').val() !== "") {
+				location.href = "/main/storelist?cate="+ $(this).attr("value")
+			} else {}			
+		})
+	})
+	
+</script>
+</head>
+
+<body>
+	<div id="h_bg">
+		<header id="header" th:replace="/cfragments/header"></header>
+	</div>
+	
+	<div id="n_bg">
+		<nav id="nav" th:replace="/cfragments/nav"></nav>
+	</div>
+	
+	<div id="s_bg">
+		<section id="section"></section>
+	</div>
+	
+	<div id="f_bg">
+		<footer id="footer" th:replace="/cfragments/footer"></footer>
+	</div>
+</body>
+</html>

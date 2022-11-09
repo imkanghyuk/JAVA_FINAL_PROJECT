@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<title>Insert title here</title>
+
+<style>
+	.reviewimg { width: 150px; height: 150px; }
+	
+	#title {margin-top: 30px;}
+	
+	#reviewlist {display: flex; flex-flow: column;}
+	#reviewlist .relist {display: flex; flex-flow: column; margin-top: 5px; margin-bottom: 5px;}
+	#reviewlist .relist .review {display: flex; flex-flow: row; width: 500px; border: 1px solid black;}
+	#reviewlist .relist .review .review_img {margin-right: 15px;}
+	#reviewlist .relist .review .review_val {display: flex; flex-flow: column; width: 400px;}
+	#reviewlist .relist .review .review_val .review_title {display: flex; flex-flow: row; justify-content: space-between; height: 30px;}
+	#reviewlist .relist .review .review_val .review_cont {display: flex; flex-flow: column; margin-top: 10px; height: 110px; justify-content: space-between;}
+	
+	#reviewlist .relist .areply {display: flex; flex-flow: column; margin-top: 15px; border: 1px solid black; width: 500px;}
+</style>
+
+<script>
+ async function printreviewlist() {
+	 
+	 const imgurl = "https://iciasmartframe2.s3.ap-northeast-2.amazonaws.com/upload/consumer/review/"
+	 const list = await $.ajax({
+		 url : "/consumer/review/read"	
+	 })
+	 console.log(list)
+	const $li = $("#reviewlist")
+	
+	for(let i=0; i<list.result.length; i++){
+	 	const storename = await getStoreName(list.result[i].sstoreNum)
+		const $lidiv = $("<div>").attr("class","relist").appendTo($li);
+	 	
+	 	const $reivew = $("<div>").attr("class","review").appendTo($lidiv);
+		const $img = $("<div>").attr("class","review_img").appendTo($reivew);
+		const $divval = $("<div>").attr("class","review_val").appendTo($reivew);
+		
+	 	const $divtitle = $("<div>").attr("class","review_title").appendTo($divval);
+	 	const $divcont = $("<div>").attr("class","review_cont").appendTo($divval);
+	 	
+		$("<span>").text(storename).attr("value", list.result[i].sstoreNum).appendTo($divtitle)
+		$("<button>").text("삭제").attr("class","btn btn-danger").addClass("btn-sm").addClass("deletereply").attr("value",list.result[i].areviewNum).appendTo($divtitle)
+		
+		if(list.result[i].areviewImg != "noimg"){
+			$("<img>").attr("src", imgurl + list.result[i].areviewImg).attr("class","reviewimg").appendTo($img)			
+		}
+		$("<span>").text("작성일 : " + list.result[i].awriteDate).appendTo($divcont)
+		$("<span>").text("평점 : " + list.result[i].ascore).appendTo($divcont)
+		$("<span>").text(list.result[i].areview).appendTo($divcont)
+		if(list.result[i].areplyContent!=null && list.result[i].areplyContent!=""){
+			const $reply = $("<div>").attr("class","areply").appendTo($lidiv);
+			$("<span>").text("사장님 답글").appendTo($reply)
+			$("<span>").text("작성일 : " + list.result[i].areplyDate).appendTo($reply)
+			$("<span>").text(list.result[i].areplyContent).appendTo($reply)
+		}
+	}
+ }
+ 
+ 
+ $(document).ready(async function() {
+	await printreviewlist()
+	
+	$(document).on("click", ".deletereply", function() {
+		if( confirm("댓글을 삭제하시겠습니까?") ) {
+			$.ajax({
+				url : "/consumer/review/delete",
+				data : {aReviewNum : $(this).val()},
+				method : "delete",
+				success : function(data){
+					console.log(data)
+					alert(data.result)
+					location.href = location.href
+					
+				}
+			})
+		} else {}
+	})
+ })
+ 
+</script>
+
+</head>
+<body>
+	<div>
+		<h1 id="title"> 리뷰 리스트</h1>
+		<div id="reviewlist"></div>
+	</div>
+</body>
+</html>

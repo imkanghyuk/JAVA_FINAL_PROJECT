@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.consumer.dao.StoreInfoDao">
+
+<select id="foodCategoryRead" resultType="com.example.demo.consumer.dto.StoreInfoDto$ReadCategoryDto">
+	select * from S_FOOD_CATEGORY
+</select>
+
+<select id="storelist" resultType="com.example.demo.consumer.dto.StoreInfoDto$StoreListDto">
+	select ROUND(AVG(NVL(ar.A_SCORE,0)),1) as S_REVIEW_AVG, COUNT(ar.A_REVIEW_NUM) as S_REVIEW_COUNT, ss.S_STORE_NAME, ss.S_MIN_DELEVERY, ss.S_STORE_LOGO, ss.S_STORE_NUM
+	from S_STORE ss left outer join A_REVIEW ar on ss.S_STORE_NUM = ar.S_STORE_NUM
+	where (ss.S_CATEGORY_NUM = #{sCategoryNum} and ss.S_LOCATION_CODE = #{sLocationCode} and ss.S_STORE_STATUS = 1)
+	GROUP BY ar.A_REVIEW_NUM, ar.A_SCORE, ss.S_STORE_NAME, ss.S_MIN_DELEVERY, ss.S_STORE_LOGO, ss.S_STORE_NUM
+</select>
+
+<select id="storelist2" resultType="com.example.demo.consumer.dto.StoreInfoDto$StoreListDto">
+	select * from S_STORE where (S_CATEGORY_NUM = #{sCategoryNum} and S_LOCATION_CODE = #{sLocationCode} and S_STORE_STATUS = 1)
+</select>
+
+<select id="storeinfo" resultType="com.example.demo.consumer.dto.StoreInfoDto$StoreInfoDetailDto">
+	select distinct smg.S_GROUP_NAME, smg.S_GROUP_NUM from S_STORE ss left outer join S_MENU_GROUP smg on ss.S_STORE_NUM = smg.S_STORE_NUM
+	where smg.S_STORE_NUM = #{sStoreNum} and ss.S_LOCATION_CODE = #{sLocationCode}
+</select>
+
+<select id="menulist" resultType="com.example.demo.consumer.dto.StoreInfoDto$StoreInfoMenuListDto">
+	select sm.* from S_STORE ss left outer join S_MENU_GROUP smg on ss.S_STORE_NUM = smg.S_STORE_NUM left outer join S_MENU sm on smg.S_GROUP_NUM = sm.S_GROUP_NUM
+	where sm.S_GROUP_NUM = #{sGroupNum} and ss.S_LOCATION_CODE = #{sLocationCode}
+</select>
+
+<select id="menudetail" resultType="com.example.demo.consumer.dto.StoreInfoDto$MenuDetailDto">
+	select ss.S_STORE_NUM, smg.S_GROUP_NUM ,sm.* from S_STORE ss left outer join S_MENU_GROUP smg on ss.S_STORE_NUM = smg.S_STORE_NUM
+	left outer join S_MENU sm on smg.S_GROUP_NUM = sm.S_GROUP_NUM
+	where sm.S_GROUP_NUM = #{sGroupNum} and sm.S_MENU_CODE = #{sMenuCode} and ss.S_LOCATION_CODE = #{sLocationCode}
+</select>
+
+<select id="locationInfo" resultType="int">
+	select S_LOCATION_CODE from S_LOCATION_INFO where S_LOCATION_NAME = #{nowLocation}
+</select>
+
+<select id="getStoreName" resultType="String">
+	select S_STORE_NAME from S_STORE where S_STORE_NUM = #{sStoreNum} 
+</select>
+
+<select id="getReview" resultType="com.example.demo.consumer.dto.StoreInfoDto$GetReviewDto">
+	select * from A_REVIEW where S_STORE_NUM = #{sStoreNum}
+</select>
+
+<resultMap type="com.example.demo.consumer.dto.StoreInfoDto$InfoImg" id="imggetmap">
+	<result column="S_INFO_IMG" property="sInfoImg"/>
+	<result column="S_IMG_NUM" property="sImgNum"/>
+</resultMap>
+
+<resultMap type="com.example.demo.consumer.dto.StoreInfoDto$StoreInfoGet" id="getinfomap">
+	<result column="S_STORE_NAME" property="sStoreName"/>
+	<result column="S_STORE_ADDRESS" property="sStoreAddress"/>
+	<result column="S_STORE_LOGO" property="sStoreLogo"/>
+	<result column="S_MIN_DELEVERY" property="sMinDeleVery"/>
+	<result column="S_STORE_TIME" property="sStoreTime"/>
+	<result column="S_STORE_INTRO" property="sStoreIntro"/>
+	
+	<collection property="sStoreImg" resultMap="imggetmap"></collection>
+</resultMap>
+
+<select id="getStoreInfo" resultMap="getinfomap">
+	select * from S_STORE ss left outer join S_INFOIMG si on ss.S_STORE_NUM = si.S_STORE_NUM where ss.S_STORE_NUM = #{sStoreNum}
+</select>
+	
+</mapper>

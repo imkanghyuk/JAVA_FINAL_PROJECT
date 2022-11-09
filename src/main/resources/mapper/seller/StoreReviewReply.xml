@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.seller.dao.StoreReviewReply">
+
+	<insert id="savereply">
+	<selectKey keyProperty="aReplyNum" order="BEFORE" resultType="int">
+      select nvl(max(A_REPLY_NUM)+1, 1) from A_REPLY
+    </selectKey>
+      insert into A_REPLY(A_REPLY_NUM, A_REPLY_CONTENT, A_REVIEW_NUM) values (#{aReplyNum}, #{aReplyContent}, #{aReviewNum})
+	</insert>
+	
+	<delete id="deletereply">
+		delete from A_REPLY where A_REPLY_NUM = #{aReplyNum}
+	</delete>
+	
+	<resultMap type="com.example.demo.seller.dto.StoreDto$StoreReplyDto" id="replymap">
+		<result column="A_REVIEW_NUM" property="aReviewNum"/>
+		<result column="A_REPLY_NUM" property="aReplyNum"/>
+		<result column="A_REPLY_CONTENT" property="aReplyContent"/>
+	</resultMap>
+	
+	<resultMap type="com.example.demo.seller.dto.StoreDto$StoreReview" id="reviewmap">
+		<result column="A_REVIEW_NUM" property="aReviewNum"/>
+		<result column="A_REVIEW" property="aReview"/>
+		<result column="A_NICKNAME" property="aNickname"/>
+		<result column="A_WRITE_DATE" property="aWriteDate"/>
+		<result column="A_SCORE" property="aScore"/>
+		<result column="A_REVIEW_IMG" property="aReviewImg"/>
+		<result column="A_ORDER_NUM" property="aOrderNum"/>
+		<result column="S_STORE_NUM" property="sStoreNum"/>
+		<collection property="reply" resultMap="replymap"></collection>
+	</resultMap>
+
+	<select id="readReview" resultMap="reviewmap" >
+		select * from a_review ar left outer join a_reply ap on ar.A_REVIEW_NUM = ap.A_REVIEW_NUM where ar.S_STORE_NUM = #{sStoreNum} order by ar.A_WRITE_DATE
+	</select>
+	
+</mapper>

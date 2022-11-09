@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<script src="/script/consumer/storeview.js"></script>
+<script src="/script/consumer/locationcode.js"></script>
+<script src="/script/consumer/logininfo.js"></script>
+
+<link rel="stylesheet" href="/css/consumer/homecss.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@700&display=swap" rel="stylesheet">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"></script>
+
+<title>Insert title here</title>
+
+<style>
+	.modal {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		background: rgba(255, 255, 255, 0.5);
+		top: 0;
+		left: 0;
+		display: none;
+	}
+
+	.modal_content {
+		border: 1px solid black;
+		width: 600px;
+		height: 800px;
+		background: #fff;
+		border-radius: 10px;
+		position: relative;
+		top: 50%;
+		left: 50%;
+		margin-top: -450px;
+		margin-left: -200px;
+		text-align: center;
+		box-sizing: border-box;
+		padding: 30px 0;
+		line-height: 23px;
+		cursor: pointer;
+	}
+	
+	#modalimg {width: 350px; height: 350px; margin-top: 30px; margin-bottom: 30px;}
+	#Modal_sMenuName {font-size: 15px;}
+	#Modal_sMenuInfo {font-size: 18px; margin-top: 10px; margin-bottom: 10px;}
+	#Modal_sMenuPrice {font-size: 19px; margin-bottom: 10px;}
+	#Modal_totaprice {font-size: 20px; margin-top: 30px; margin-bottom: 30px;}
+	
+	#a_bg {border-bottom: 1px solid black;}
+	#a_bg #aside {width: 1000px; margin: 0 auto; padding: 1rem; }
+	#a_bg #aside #catelist {display: flex; flex-flow: row; justify-content: space-between;}
+	#a_bg #aside #catelist .catelist_div:hover {cursor: pointer;}	
+	
+	#s_bg #section {width: 1000px; margin: 0 auto; padding: 1rem; display: flex; flex-flow: row; justify-content: space-between;}
+	#s_bg #section #section_1 { display: flex; flex-flow: column; width: 650px; border: 1px solid black;}
+	#s_bg #section #section_1 #s_store_info {border-bottom: 1px solid black;}
+	#s_bg #section #section_1 #s_store_info h1 {padding-left : 15px;}
+	#s_bg #section #section_1 #s_store_btn {display: flex; flex-flow: row; margin: 0 auto; justify-content: space-between; }
+	#s_bg #section #section_1 #botton_line {border-bottom: 1px solid black;}
+	#s_bg #section #section_1 #s_store_btn .store_btn { width: 100px; height: 50px; text-align: center; margin-right: 20px; font-size: 20px; line-height: 50px;}
+	#s_bg #section #section_1 #s_store_btn .store_btn:hover {cursor: pointer;}
+	#s_bg #section #section_1 #s_store_btn .store_btn:last-child {margin-right: 0px;}
+	#s_bg #section #section_1 #store_menu_group {display: flex; flex-flow: column;}
+	#menugrouplist .menugroup {display: flex; flex-flow: column; font-size: 30px;}
+	#menugrouplist .menugroup .menulist {display: flex; flex-flow: column;}
+	#menugrouplist .menugroup .menulist .listli:first-child {margin-top: 20px;}
+	#menugrouplist .menugroup .menulist .listli {display: flex; flex-flow: row; margin-bottom: 20px;}
+	#menugrouplist .menugroup .menulist .listli .c_menu_img>img {width: 150px; height: 150px;}
+	#menugrouplist .menugroup .menulist .listli .c_menu_content {display: flex; flex-flow: column; width: 200px; justify-content: space-between; font-size: 20px;}
+	#menugrouplist .menugroup .menulist .listli .c_menu_content>span:last-child{margin-bottom: 40px;}
+
+	#s_bg #section #section_1 #store_menu_group .review_result {display: flex; flex-flow: row; width: 600px; margin-top: 10px; margin-left: 10px; border: 1px solid black;}
+	#s_bg #section #section_1 #store_menu_group .review_result .r_img_div {border: 1px solid black;}
+	#s_bg #section #section_1 #store_menu_group .review_result .r_img_div > img {width: 150px; height: 150px; }
+	#s_bg #section #section_1 #store_menu_group .review_result .r_info_div {width: 400px; margin-left: 10px;}
+	#s_bg #section #section_1 #store_menu_group .review_result .r_info_div .r_nick_div {display: flex; flex-flow: row;}
+	#s_bg #section #section_1 #store_menu_group .review_result .r_info_div .r_nick_div .star_point {width: 70px; margin-left: 10px;}
+	
+	#s_bg #section #section_1 #store_menu_group #intro_title {margin: 0 auto; margin-top: 20px;}
+	#s_bg #section #section_1 #store_menu_group #intro_img {display: flex; flex-flow: row; justify-content: space-between;}
+	#s_bg #section #section_1 #store_menu_group #intro_img img{width: 200px; height: 200px; border: 1px solid black;}
+	#s_bg #section #section_1 #store_menu_group #intro_content {font-size: 20px; margin-left: 10px;}
+	#s_bg #section #section_1 #store_menu_group #intro_content #intro_sstoreIntro {height: 250px;}
+	#s_bg #section #section_1 #store_menu_group #intro_etc {margin-left: 10px; display: flex; flex-flow: column;}
+	#s_bg #section #section_1 #store_menu_group #intro_etc #intro_sstoreAddress {display: flex; flex-flow: row;}
+	#s_bg #section #section_1 #store_menu_group #intro_etc #intro_sstoreAddress p {padding-right: 10px;}
+	#s_bg #section #section_1 #store_menu_group #intro_etc #intro_sminDeleVery {display: flex; flex-flow: row;}
+	#s_bg #section #section_1 #store_menu_group #intro_etc #intro_sminDeleVery p {padding-right: 10px;}
+	#s_bg #section #section_1 #store_menu_group #intro_etc #intro_sstoreTime {display: flex; flex-flow: row;}
+	#s_bg #section #section_1 #store_menu_group #intro_etc #intro_sstoreTime p {padding-right: 10px;}
+	
+	#s_bg #section #section_2 {width: 350px;}
+	#s_bg #section #section_2 #store_basket {display: flex; flex-flow: column; border: 1px solid black;}
+	#s_bg #section #section_2 #store_basket div {margin: 0 auto;}
+	
+</style>
+
+<script>
+	$(document).ready(async function() {
+
+	})
+</script>
+
+</head>
+
+<body>
+
+	<div id="h_bg">
+		<header id="header" th:replace="/cfragments/header"></header>
+	</div>
+	
+	<div id="a_bg">
+		<aside id="aside">
+			<div id="catelist">
+				
+			</div>
+		</aside>
+	</div>
+	
+	<div id="s_bg">
+		<section id="section">
+			<div id="section_1">
+				<div id="s_store_info">
+					<h1>가게 정보 </h1>
+				</div>
+				<div id="s_store_btn">
+					<div class="store_btn" id="store_menu_get">메뉴</div>
+					<div class="store_btn" id="store_review_get">리뷰</div>
+					<div class="store_btn" id="store_info_get">가게 정보</div>
+				</div>
+				<div id="botton_line"></div>
+
+				<div id="store_menu_group">
+					<ul id="menugrouplist"></ul>
+				</div>
+			</div>
+			<div id="section_2">
+				<div id="store_basket"> 
+					<div> <p> 장바구니 </p> </div>
+					<div id="basketlist" th:replace="/consumer/basket/cbasket"></div>
+				 </div>
+			</div> 
+		</section>
+	</div>
+	
+	<div id="f_bg">
+		<footer id="footer" th:replace="/cfragments/footer"></footer>
+	</div>	
+
+	<div id="modal" class="modal">
+		<div class="modal_content">
+			<div id="modalheader">
+				<span>메뉴 상세</span>
+				<button id="closeButton" class="btn btn-danger btn-sm">X</button>
+			</div>
+
+			<input type="hidden" id="sStoreNum"> <input type="hidden"
+				id="sGroupNum"> <input type="hidden" id="sMenuCode">
+
+			<div id="Modal_sMenuImg">
+				<img id="modalimg">
+			</div>
+			<div id="Modal_sMenuName">
+				<span>메뉴이름 :</span> <span id="modalname"></span>
+			</div>
+			<div id="Modal_sMenuInfo">
+				<span id="modalinfo"></span>
+			</div>
+			<div id="Modal_sMenuPrice">
+				<span>가격 :</span> <span id="modalprice"></span>
+			</div>
+			<div id="Modal_sCount">
+				<span>수량 : </span>
+				<button id="countminus" value="minus" class="btn btn-danger btn-sm">-</button>
+				<span id="modalcount"></span>
+				<button id="countplus" value="plus" class="btn btn-danger btn-sm">+</button>
+			</div>
+			<div id="Modal_totaprice">
+				<span>총 가격 :</span> <span id="modaltotalprice"></span>
+			</div>
+			<div id="Modal_modalfooter">
+				<button id="tobasket" class="btn btn-danger">장바구니 담기</button>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

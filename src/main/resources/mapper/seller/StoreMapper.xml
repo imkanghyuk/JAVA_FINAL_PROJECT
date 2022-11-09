@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.seller.dao.SstoreDao">
+
+	<insert id="sStoreAdd">
+	<selectKey keyProperty="sStoreNum" order="BEFORE" resultType="int">
+      select nvl(max(S_STORE_NUM)+1, 1) from S_STORE
+    </selectKey>
+      insert into S_STORE(S_STORE_NUM, S_STORE_NAME, S_STORE_ADDRESS, S_STORE_LOGO, S_MIN_DELEVERY, S_STORE_TIME, S_CATEGORY_NUM, S_LOCATION_CODE, S_ID, S_STORE_INTRO) 
+      values (#{sStoreNum}, #{sStoreName}, #{sStoreAddress}, #{sStoreLogo}, #{sMinDeleVery}, #{sStoreTime}, #{sCategoryNum}, #{sLocationCode}, #{sId}, #{sStoreIntro})
+	</insert>
+
+	<select id="getLocation" resultType="com.example.demo.seller.dto.StoreDto$LocationDto">
+		select * from S_LOCATION_INFO
+	</select>
+	
+	<select id="getCategory" resultType="com.example.demo.seller.dto.StoreDto$CategoryDto">
+		select * from S_FOOD_CATEGORY
+	</select>
+	
+	<select id="sStoreRead" resultType="com.example.demo.seller.dto.StoreDto$StoreRead">
+		select * from S_STORE where S_ID=#{sId}
+	</select>
+	
+	<update id="changeStatus">
+		update S_STORE set S_STORE_STATUS = #{sStoreStatus} where (S_ID = #{sId} and S_STORE_NUM = #{sStoreNum})
+	</update>
+	
+	<delete id="deleteStore">
+		delete from S_STORE where (S_STORE_NUM = #{sStoreNum} and S_ID = #{sId}) 
+	</delete>
+	
+	<insert id="addInfoImg">
+		<selectKey keyProperty="sImgNum" order="BEFORE" resultType="int">
+			select nvl(max(S_IMG_NUM)+1, 1) from S_INFOIMG 
+		</selectKey>
+		insert into S_INFOIMG(S_IMG_NUM, S_STORE_NUM, S_INFO_IMG) values (#{sImgNum}, #{sStoreNum}, #{sInfoImg})
+	</insert>
+	
+	<select id="readinfoimg" resultType="com.example.demo.seller.dto.StoreDto$readIntroImg">
+		select * from S_INFOIMG where S_STORE_NUM = #{sStoreNum}
+	</select>
+	
+	<delete id="deleteInfoImg">
+		delete from S_INFOIMG where S_STORE_NUM = #{sStoreNum}
+	</delete>
+</mapper>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<title>Insert title here</title>
+
+<link rel="stylesheet" href="/css/seller/main.css">
+
+<style>
+	#section_main>div>h1 {margin-bottom: 30px;}
+	#prevorderlist {display: flex; flex-flow: column; width: 500px;}
+	#prevorderlist .prevlist {border: 1px solid black; margin-bottom: 30px;}
+	#prevorderlist .prevlist:last-child {margin-bottom: 0px;}
+</style>
+
+<script>
+	async function printPrevOrder(storenum) {
+		await $.ajax({
+			url : "/storeorder/clear",
+			data : {sStoreNum : storenum},
+			success : function(data) {
+				console.log(data)
+				const $main = "#prevorderlist"
+				
+				for(let i=0; i<data.result.length; i++) {
+					const div1 = $("<div>").attr("class","prevlist").addClass("prevno_"+i).appendTo($main)
+					const datediv = $("<div>").attr("class", "date").addClass("prevdate_"+i).appendTo(div1)
+						$("<span>").text(data.result[i].aorderDate).attr("value", data.result[i].aorderDate).appendTo(datediv)
+					const statusdiv =$("<div>").attr("class", "status").addClass("prevstatus_"+i).appendTo(div1)
+						$("<span>").text(data.result[i].aorderStatus).attr("value", data.result[i].aorderStatus).appendTo(statusdiv)
+					const addressdiv =$("<div>").attr("class", "address").addClass("prevaddress_"+i).appendTo(div1)
+						$("<span>").text("주소 : " + data.result[i].adeleveryAddress + " " + data.result[i].adetailAddress).attr("value", data.result[i].adeleveryAddress + " " + data.result[i].adetailAddress).appendTo(addressdiv)
+					const pricediv =$("<div>").attr("class", "price").addClass("prevprice_"+i).appendTo(div1)
+						$("<span>").text("주문금액 : " + data.result[i].atotalPrice).attr("value", data.result[i].atotalPrice).appendTo(pricediv)
+					const menudiv = $("<div>").attr("class", "menu").addClass("prevmenu_"+i).appendTo(div1)
+						for(let j=0; j<data.result[i].readDetail.length;j++){
+							$("<p>").text("메뉴명 : " + data.result[i].readDetail[j].smenuName).attr("value", data.result[i].readDetail[j].smenuName).appendTo(menudiv)
+							$("<p>").text("수량 : " + data.result[i].readDetail[j].acount).attr("value", data.result[i].readDetail[j].acount).appendTo(menudiv)
+						}
+				}
+				
+			}
+		})
+	}
+
+	$(document).ready(async function(){
+	await $.ajax({
+		url : "/sellerinfo",
+		success : async function(data) {
+			const storenum = data.result.sStoreNum
+			await printPrevOrder(storenum)	
+		}
+		})
+	})
+</script>
+
+</head>
+
+<body>
+	<div id="header_bg">
+		<header id="header" th:replace="/sfragments/header"></header>
+	</div>
+
+	<div id="nav_bg">
+		<div id="nav_content">	
+		<nav id="nav" th:replace="/sfragments/nav"></nav>
+		<section id="section">
+			<div id="section_main">
+				<div>
+					<h1> 이전 주문 내역 </h1>
+					<div id="prevorderlist"></div>
+				</div>
+			</div>
+		</section>
+		</div>
+	</div>
+	
+	<div id="footer_bg">
+		<footer id="footer" th:replace="/sfragments/footer"></footer>
+	</div>	
+</body>
+</html>

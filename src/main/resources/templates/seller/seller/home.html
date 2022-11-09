@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<title>Insert title here</title>
+
+<link rel="stylesheet" href="/css/seller/main.css">
+<style>
+	#noworderlist, #ingorderlist{width: 200px;}
+	#nav_bg #nav_content #section #home_section {display: flex; justify-content: space-between; width: 600px;} 
+</style>
+<script>
+	async function StoreUser() {
+		const storenum = await $.ajax({
+			url : "/sellerinfo",
+			success : function(data) {
+				if(data.result.sId=='비로그인'){
+					return
+				}else if(data.result.sStoreNum == 0){
+					if(confirm("가게 미등록 셀러입니다 등록하시겠습니까?")) {
+						location.href ="/seller/store/storeadd"
+				} else {	} } } })
+		return storenum.result.sStoreNum
+	}
+	
+	async function printNowOrder(storenum) {
+		await $.ajax({
+			url : "/storeorder/now",
+			data : {sStoreNum : storenum},
+			success : function(data) {
+				const $main = "#noworderlist"
+				
+				for(let i=0; i<data.result.length; i++) {
+					const div1 = $("<div>").attr("class","").addClass("no_"+i).appendTo($main)
+					const datediv = $("<div>").attr("class", "date").addClass("date_"+i).appendTo(div1)
+						$("<span>").text(data.result[i].aorderDate).attr("value", data.result[i].aorderDate).appendTo(datediv)
+					const statusdiv =$("<div>").attr("class", "status").addClass("status_"+i).appendTo(div1)
+						$("<span>").text(data.result[i].aorderStatus).attr("value", data.result[i].aorderStatus).appendTo(statusdiv)
+					const addressdiv =$("<div>").attr("class", "address").addClass("address_"+i).appendTo(div1)
+						$("<span>").text("주소 : " + data.result[i].adeleveryAddress + " " + data.result[i].adetailAddress).attr("value", data.result[i].adeleveryAddress + " " + data.result[i].adetailAddress).appendTo(addressdiv)
+					const pricediv =$("<div>").attr("class", "price").addClass("price_"+i).appendTo(div1)
+						$("<span>").text("주문금액 : " + data.result[i].atotalPrice).attr("value", data.result[i].atotalPrice).appendTo(pricediv)
+					const menudiv = $("<div>").attr("class", "menu").addClass("menu_"+i).appendTo(div1)
+						for(let j=0; j<data.result[i].readDetail.length;j++){
+							$("<p>").text("메뉴명 : " + data.result[i].readDetail[j].smenuName).attr("value", data.result[i].readDetail[j].smenuName).appendTo(menudiv)
+							$("<p>").text("수량 : " + data.result[i].readDetail[j].acount).attr("value", data.result[i].readDetail[j].acount).appendTo(menudiv)
+						}
+					const btndiv = $("<div>").attr("class", "btn").addClass("btn_"+i).appendTo(div1)
+						$("<button>").text("주문 접수").attr("value", data.result[i].aorderNum).attr("class", "update_btn").appendTo(btndiv)
+						$("<button>").text("주문 취소").attr("value", data.result[i].aorderNum).attr("class", "cansle_btn").appendTo(btndiv)
+				}
+				
+			}
+		})
+	}
+
+	async function printIngOrder(storenum) {
+		await $.ajax({
+			url : "/storeorder/ing",
+			data : {sStoreNum : storenum},
+			success : function(data) {
+				const $main = "#ingorderlist"
+				
+				for(let i=0; i<data.result.length; i++) {
+					const div1 = $("<div>").attr("class","").addClass("ingno_"+i).appendTo($main)
+					const datediv = $("<div>").attr("class", "ingdate").addClass("ingdate_"+i).appendTo(div1)
+						$("<span>").text(data.result[i].aorderDate).attr("value", data.result[i].aorderDate).appendTo(datediv)
+					const statusdiv =$("<div>").attr("class", "ingstatus").addClass("ingstatus_"+i).appendTo(div1)
+						$("<span>").text(data.result[i].aorderStatus).attr("value", data.result[i].aorderStatus).appendTo(statusdiv)
+					const addressdiv =$("<div>").attr("class", "ingaddress").addClass("ingaddress_"+i).appendTo(div1)
+						$("<span>").text("주소 : " + data.result[i].adeleveryAddress + " " + data.result[i].adetailAddress).attr("value", data.result[i].adeleveryAddress + " " + data.result[i].adetailAddress).appendTo(addressdiv)
+					const pricediv =$("<div>").attr("class", "ingprice").addClass("ingprice_"+i).appendTo(div1)
+						$("<span>").text("주문금액 : " + data.result[i].atotalPrice).attr("value", data.result[i].atotalPrice).appendTo(pricediv)
+					const menudiv = $("<div>").attr("class", "ingmenu").addClass("ingmenu_"+i).appendTo(div1)
+						for(let j=0; j<data.result[i].readDetail.length;j++){
+							$("<p>").text("메뉴명 : " + data.result[i].readDetail[j].smenuName).attr("value", data.result[i].readDetail[j].smenuName).appendTo(menudiv)
+							$("<p>").text("수량 : " + data.result[i].readDetail[j].acount).attr("value", data.result[i].readDetail[j].acount).appendTo(menudiv)
+						}
+					if(data.result[i].aorderStatus == "접수완료"){
+						const btndiv = $("<div>").attr("class", "delivery_btn").addClass("delivery_btn_"+i).appendTo(div1)
+						$("<button>").text("배달 진행").attr("value", data.result[i].aorderNum).attr("class", "delivery_btn").appendTo(btndiv)
+					} else{}
+							
+				}
+				
+			}
+		})
+	}	
+
+	$(document).ready(async function(){
+		
+		const storenum = await StoreUser()
+		
+		await printNowOrder(storenum)
+		
+		await printIngOrder(storenum)
+		
+		$(document).on("click", ".update_btn", function(){
+			console.log($(this).val())
+			$.ajax({
+				url : "/storeorder/change",
+				data : {sStoreNum : storenum, aOrderNum:$(this).val()},
+				method : "put",
+				success : function(data){
+					alert(data.result)
+					console.log(data)
+					location.href = location.href
+				}
+			})
+		})
+		
+		$(document).on("click", ".cansle_btn", function(){
+			console.log($(this).val())
+			$.ajax({
+				url : "/storeorder/cansle",
+				data : {sStoreNum : storenum, aOrderNum:$(this).val()},
+				method : "put",
+				success : function(data){
+					alert(data.result)
+					console.log(data)
+					location.href = location.href					
+				}
+			})
+		})
+		
+		$(document).on("click", ".delivery_btn", function(){
+			console.log($(this).val())
+			$.ajax({
+				url : "/storeorder/delivery",
+				data : {sStoreNum : storenum, aOrderNum:$(this).val()},
+				method : "put",
+				success : function(data){
+					alert(data.result)
+					console.log(data)
+					location.href = location.href					
+				}
+			})
+		})		
+		
+	})
+</script>
+	
+</head>
+<body>
+	<div id="header_bg">
+		<header id="header" th:replace="/sfragments/header"></header>
+	</div>
+	
+	<div id="nav_bg">
+		<div id="nav_content">
+		<nav id="nav" th:replace="/sfragments/nav"></nav>
+		
+		<section id="section">
+		<div id="home_section">
+			<div>
+				<h1> 접수 내역 </h1>
+				<div id="noworderlist"></div>
+			</div>
+
+			<div>
+				<h1> 진행 내역 </h1>
+				<div id="ingorderlist"></div>
+			</div>
+		</div>
+		</section>
+		</div>
+	</div>
+	
+	<div id="footer_bg">
+		<footer id="footer" th:replace="/sfragments/footer"></footer>
+	</div>
+</body>
+</html>

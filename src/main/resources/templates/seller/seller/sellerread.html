@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<title>Insert title here</title>
+
+<link rel="stylesheet" href="/css/seller/main.css">
+
+<style>
+#nav_bg #nav_content #section #section_main {}
+</style>
+
+<script>
+
+	async function printSellerInfo() {
+		await $.ajax({
+			url : "/seller/seller/inforead",
+			success : function(data) {
+				const selldiv = "#sellerinfodiv" 
+				const seldiv = $("<div>").attr("id", "main_info").appendTo(selldiv)
+				
+				const div1 = $("<div>").attr("class", "div_name").appendTo(seldiv)
+					$("<p>").text("판매자 이름").appendTo(div1);
+					$("<p>").text(data.result.sname).appendTo(div1);
+				const div2 = $("<div>").attr("class", "div_buis").appendTo(seldiv)
+					$("<p>").text("사업자 번호").appendTo(div2);
+					$("<p>").text(data.result.sbuisnessNum).appendTo(div2);
+				const div3 = $("<div>").attr("class", "div_birth").appendTo(seldiv)
+					$("<p>").text("생년월일").appendTo(div3);
+					$("<p>").text(data.result.sbirth).appendTo(div3);
+				const div4 = $("<div>").attr("class", "div_joind").appendTo(seldiv)
+					$("<p>").text("가입일").appendTo(div4);
+					$("<p>").text(data.result.sjoinDay).appendTo(div4);
+				const form = $("<form>").attr("id", "update_form").appendTo(seldiv)
+					const div5 = $("<div>").attr("class", "div_email").appendTo(form)
+						$("<p>").text("메일 주소").appendTo(div5);
+						$("<input>").attr("type","text").attr("value",data.result.semail).attr("name","sEmail").attr("id","emailval").appendTo(div5);
+					const div6 = $("<div>").attr("class", "div_phone").appendTo(form)
+						$("<p>").text("휴대전화").appendTo(div6);
+						$("<input>").attr("type","text").attr("value",data.result.sphone).attr("name","sPhone").attr("id","phoneval").appendTo(div6);
+				$("<button>").text("수정하기").attr("id","update_sell_btn").attr("value", data.result.sid).appendTo(seldiv)
+			}
+		})
+
+	}
+	$(document).ready(async function() {
+		await printSellerInfo()
+		
+		$(document).on("click", "#update_sell_btn", function() {
+			const param = $("#update_form").serialize()
+			
+			$.ajax({
+				url : "/seller/seller/infoupdate",
+				data : param,
+				method : "put",
+				success : function(data) {
+					location.href=location.href
+				}
+			})
+		})
+	})
+</script>
+
+</head>
+
+<body>
+	<div id="header_bg">
+		<header id="header" th:replace="/sfragments/header"></header>
+	</div>
+	
+	<div id="nav_bg">
+		<div id="nav_content">
+			<nav id="nav" th:replace="/sfragments/nav"></nav>
+			
+			<section id="section">
+			<div id="section_main">
+				<div id="sellerinfodiv"></div>
+			</div>
+		</section>
+		</div>
+		
+
+	</div>
+	
+	<div id="footer_bg">
+		<footer id="footer" th:replace="/sfragments/footer"></footer>
+	</div>
+</body>
+</html>

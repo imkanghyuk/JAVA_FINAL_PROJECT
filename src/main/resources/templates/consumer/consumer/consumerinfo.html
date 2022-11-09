@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<title>Insert title here</title>
+
+<script src="/script/consumer/consumerinfo.js"></script>
+<script src="/script/consumer/logininfo.js"></script>
+<script src="/script/consumer/getStoreinfo.js"></script>
+
+<link rel="stylesheet" href="/css/consumer/homecss.css">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@700&display=swap" rel="stylesheet">
+
+<style>
+	#deletemodal {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		background: rgba(255, 255, 255, 0.5);
+		top: 0;
+		left: 0;
+		display: none;
+	}
+
+	#deletemodal_content {
+		border: 1px solid black;
+		width: 300px;
+		height: 200px;
+		background: #fff;
+		border-radius: 10px;
+		position: relative;
+		top: 50%;
+		left: 50%;
+		margin-top: -160px;
+		margin-left: -200px;
+		text-align: center;
+		box-sizing: border-box;
+		padding: 2px 0;
+		line-height: 23px;
+		cursor: pointer;
+	}
+	
+	#deletemodal_content {display: flex; flex-flow: column; justify-content: space-between;}
+	#deletemodal_content #modalheader{height: 50px; line-height: 60px; }
+	#deletemodal_content #modal_form_div{display: flex; flex-flow: column; justify-content: space-between; height: 140px;}
+	#deletemodal_content #modal_form_div #deleteform {display: flex; flex-flow: column; justify-content: center; height: 140px;}
+	#modal_id_input {margin-bottom: 20px;}
+	#modal_del_btn {margin-bottom: 6px;}
+	
+	#s_bg #section { width: 1000px; margin: 0 auto; display: flex; flex-flow: row;}
+	#s_bg #section #sectionPart1 { width: 300px; height: 600px; display: flex; flex-flow: column; justify-content: space-between;}
+	#s_bg #section #sectionPart1 .seciton_p1_div {width: 200px; height: 100px; margin: 0 auto; border: 1px solid black; text-align: center; line-height: 100px;}
+	#s_bg #section #sectionPart1 #mylevel {margin-top: 30px;}
+	#s_bg #section #sectionPart2 { width: 600px; }
+</style>
+
+<script>
+
+</script>
+
+</head>
+
+<body>
+	<div id="h_bg">
+		<header id="header" th:replace="/cfragments/header"></header>
+	</div>	
+
+	<div id="s_bg">
+		<section id="section">
+			<div id="sectionPart1">
+				<div id="mylevel" class="seciton_p1_div"> 
+				 <p> 현재 등급 : <span id="mylevelinfo"></span> </p>  
+				</div>
+				<div id="mypageclick" class="seciton_p1_div"> 내 정보 변경 </div>
+				<div id="myorderclick" class="seciton_p1_div"> 주문내역 </div>
+				<div id="myreviewclick" class="seciton_p1_div"> 내가 쓴 리뷰 </div>
+				<div id="myiddeleteclick" class="seciton_p1_div"> 회원 탈퇴 </div>
+			</div>
+			<div id="sectionPart2">
+				<div id="sectionpart2val">
+				</div>
+			</div>
+			
+		</section>
+	</div>
+	
+	<div id="f_bg">
+		<footer id="footer" th:replace="/cfragments/footer"></footer>
+	</div>
+	
+	<div id="deletemodal" class="modal">
+		<div id="deletemodal_content"  class="modal_content">
+			<div id="modalheader">
+				<span>회원 탈퇴</span>
+				<button id="closeButton" class="btn btn-outline-danger btn-sm">X</button>
+			</div>
+			<div id="modal_form_div">
+				<form id="deleteform">
+					<div id="modal_id_input">
+						<span> 아이디 </span>
+						<input type="text" name="cId" id="deleteID">
+					</div>
+					<div id="modal_pw_input">
+						<span> 비밀번호 </span>
+						<input type="text" name="cPassword" id="deletePW">
+					</div>
+				</form>
+				<div id="modal_del_btn">
+					<button id="byebyeInfo" class="btn btn-danger"> 회원 탈퇴 </button>
+				</div>
+			</div>
+		</div>
+	</div>	
+
+
+
+</body>
+</html>

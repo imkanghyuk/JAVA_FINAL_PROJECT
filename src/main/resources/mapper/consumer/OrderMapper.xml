@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.consumer.dao.OrderDao">
+
+	<insert id="cOrder">
+		<selectKey keyProperty="aOrderNum" order="BEFORE" resultType="int">
+			select nvl(max(A_ORDER_NUM), 0)+1 from A_ORDER
+		</selectKey>
+		insert into A_ORDER(A_ORDER_NUM, C_ID, A_DELEVERY_ADDRESS, A_DETAIL_ADDRESS, S_STORE_NUM, A_ORDER_STATUS, A_TOTAL_PRICE)
+		values (#{aOrderNum}, #{cId}, #{aDeleveryAddress}, #{aDetailAddress}, #{sStoreNum}, #{aOrderStatus}, #{aTotalPrice})		
+	</insert>
+	
+	<select id="cOrderStatusCheck" resultType="int">
+		select count(*) from A_ORDER where C_ID = #{cId} and (A_ORDER_STATUS ='접수대기' or A_ORDER_STATUS ='접수완료')
+	</select>
+	
+	<resultMap type="com.example.demo.consumer.dto.OrderDto$ReadDetailDto" id="ReaddetailMap">
+		<result column="A_DETAIL_CODE" property="aDetailCode"/>
+		<result column="S_MENU_NAME" property="sMenuName"/>
+		<result column="A_COUNT" property="aCount"/>
+	</resultMap>
+	
+	<resultMap type="com.example.demo.consumer.dto.OrderDto$ListDto" id="ReadMap">
+		<result column="A_ORDER_NUM" property="aOrderNum"/>
+		<result column="A_ORDER_DATE" property="aOrderDate"/>
+		<result column="A_ORDER_STATUS" property="aOrderStatus"/>
+		<result column="A_Delevery_Address" property="aDeleveryAddress"/>
+		<result column="A_DETAIL_ADDRESS" property="aDetailAddress"/>
+		<result column="S_STORE_NUM" property="sStoreNum"/>
+		<result column="A_TOTAL_PRICE" property="aTotalPrice"/>
+		<collection property="readDetail" resultMap="ReaddetailMap"></collection>
+	</resultMap>
+
+	<select id="cOrderNowlist" resultMap="ReadMap">
+		select  ao.A_ORDER_NUM, ao.A_ORDER_DATE, ao.A_ORDER_STATUS, ao.S_STORE_NUM, ao.A_Delevery_Address,
+		ao.A_TOTAL_PRICE, ao.A_DETAIL_ADDRESS, ao.A_TOTAL_PRICE, sm.S_MENU_NAME ,aod.A_COUNT, aod.A_DETAIL_CODE
+		 from a_order ao left outer join a_order_detail aod on ao.a_order_num = aod.a_order_num
+		 left outer join s_menu sm on aod.s_menu_code = sm.s_menu_code
+		 left outer join s_menu_group smg on sm.S_GROUP_NUM = smg.s_group_num
+		
+		 where ao.C_ID = #{cId}
+		 
+		 and (ao.A_ORDER_STATUS ='접수대기' or ao.A_ORDER_STATUS ='접수완료'	 or ao.A_ORDER_STATUS ='배달중')
+		 
+		 order by ao.A_ORDER_DATE desc
+	</select>
+	
+	<delete id="cOrderCancel">
+		delete from A_ORDER where C_ID = #{cId}
+	</delete>
+	
+	<update id="totalPriceUpdate">
+		update A_ORDER set A_TOTAL_PRICE = #{aTotalPrice} where A_ORDER_NUM = #{aOrderNum} and C_ID = #{cId}
+	</update>
+	
+	<resultMap type="com.example.demo.consumer.dto.OrderDto$OrderDetailListDto" id="detailMap">
+		<result column="A_DETAIL_CODE" property="aDetailCode"/>
+		<result column="S_GROUP_NUM" property="sGroupNum"/>
+		<result column="S_MENU_CODE" property="sMenuCode"/>
+		<result column="A_COUNT" property="aCount"/>
+		<result column="S_MENU_NAME" property="sMenuName"/>
+		<result column="S_GROUP_NAME" property="sGroupName"/>
+	</resultMap>
+	
+	<resultMap type="com.example.demo.consumer.dto.OrderDto$ListAllDto" id="listMap">
+		<result column="A_ORDER_NUM" property="aOrderNum"/>
+		<result column="A_ORDER_DATE" property="aOrderDate"/>
+		<result column="A_ORDER_STATUS" property="aOrderStatus"/>
+		<result column="A_Delevery_Address" property="aDeleveryAddress"/>
+		<result column="A_DETAIL_ADDRESS" property="aDetailAddress"/>
+		<result column="S_STORE_NUM" property="sStoreNum"/>
+		<result column="A_TOTAL_PRICE" property="aTotalPrice"/>
+		<collection property="detailList" resultMap="detailMap"></collection>
+	</resultMap>
+	
+	<select id="cOrderBeforelist" resultMap="listMap">
+		select
+		ao.A_ORDER_NUM, ao.A_ORDER_DATE, ao.A_ORDER_STATUS, ao.A_Delevery_Address, ao.A_DETAIL_ADDRESS, ao.S_STORE_NUM, ao.A_TOTAL_PRICE,
+		aod.S_GROUP_NUM, aod.S_MENU_CODE, aod.A_COUNT, aod.A_DETAIL_CODE, sm.S_MENU_NAME, smg.S_GROUP_NAME
+		 from
+		 a_order ao
+		 left outer join a_order_detail aod on ao.a_order_num = aod.a_order_num
+		 left outer join s_menu sm on aod.s_menu_code = sm.s_menu_code
+		 left outer join s_menu_group smg on sm.S_GROUP_NUM = smg.s_group_num
+		 where ao.C_ID = #{cId} 
+		 and (ao.A_ORDER_STATUS = '주문취소' or ao.A_ORDER_STATUS = '배달완료')
+		 order by ao.A_ORDER_DATE desc
+	</select>
+	
+	<select id="findByOrderNum" resultType="Boolean">
+		select count(*) from A_ORDER where C_ID=#{cId} and a_order_num = #{aOrderNum} and rownum &lt;=1
+	</select>
+	
+	<update id="deleteUserChange">
+		update A_ORDER set C_ID = #{newCid} where C_ID = #{cId}
+	</update>
+	
+		<resultMap type="com.example.demo.consumer.dto.OrderDto$ReadDetailDto" id="OrderReaddetailMap">
+		<result column="S_MENU_NAME" property="sMenuName"/>
+		<result column="A_COUNT" property="aCount"/>
+	</resultMap>
+	
+	<resultMap type="com.example.demo.consumer.dto.OrderDto$ListDto" id="OrderReadMap">
+		<result column="A_ORDER_NUM" property="aOrderNum"/>
+		<result column="A_ORDER_DATE" property="aOrderDate"/>
+		<result column="A_ORDER_STATUS" property="aOrderStatus"/>
+		<result column="A_Delevery_Address" property="aDeleveryAddress"/>
+		<result column="A_DETAIL_ADDRESS" property="aDetailAddress"/>
+		<result column="S_STORE_NUM" property="sStoreNum"/>
+		<result column="A_TOTAL_PRICE" property="aTotalPrice"/>
+		<collection property="readDetail" resultMap="OrderReaddetailMap"></collection>
+	</resultMap>
+
+	<select id="cOrderNowListRead" resultMap="OrderReadMap">
+		select  ao.A_ORDER_NUM, ao.A_ORDER_DATE, ao.A_ORDER_STATUS, ao.S_STORE_NUM, ao.A_Delevery_Address,
+		ao.A_TOTAL_PRICE, ao.A_DETAIL_ADDRESS, ao.A_TOTAL_PRICE, sm.S_MENU_NAME ,aod.A_COUNT
+		 from a_order ao left outer join a_order_detail aod on ao.a_order_num = aod.a_order_num
+		 left outer join s_menu sm on aod.s_menu_code = sm.s_menu_code
+		 left outer join s_menu_group smg on sm.S_GROUP_NUM = smg.s_group_num
+		 where (ao.C_ID = #{cId} and ao.A_ORDER_NUM = #{aOrderNum} and ao.A_ORDER_STATUS ='접수대기')
+	</select>
+</mapper>

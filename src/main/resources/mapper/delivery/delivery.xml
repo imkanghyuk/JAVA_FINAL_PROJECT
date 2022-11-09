@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.delivery.DeliveryDao">
+
+	<resultMap type="com.example.demo.delivery.DeliveryDto$DelireadDto" id="deliverymap">
+		<result column="S_STORE_NAME" property="sStoreName"/>
+		<result column="S_STORE_ADDRESS" property="sStoreAddress"/>
+		
+		<result column="A_ORDER_NUM" property="aOrderNum"/>
+		<result column="A_ORDER_DATE" property="aOrderDate"/>
+		<result column="A_ORDER_STATUS" property="aOrderStatus"/>
+		<result column="C_ID" property="cId"/>
+		<result column="A_DELEVERY_ADDRESS" property="aDeleveryAddress"/>
+		<result column="A_DETAIL_ADDRESS" property="aDetailAddress"/>
+		<result column="S_STORE_NUM" property="sStoreNum"/>
+		<result column="A_TOTAL_PRICE" property="aTotalPrice"/>
+	</resultMap>
+
+	<select id="readorder" resultMap="deliverymap">
+		select * from S_STORE ss left outer join A_ORDER ao on ss.S_STORE_NUM = ao.S_STORE_NUM where (ao.A_ORDER_STATUS ='배달중' and ss.S_LOCATION_CODE = #{sLocationCode})
+	</select>
+	
+	<update id="updatedeliveryStatus">
+		update A_ORDER set A_ORDER_STATUS='배달완료' where A_ORDER_NUM = #{aOrderNum}
+	</update>
+</mapper>

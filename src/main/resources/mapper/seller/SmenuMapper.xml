@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.seller.dao.SmenuDao">
+
+	<insert id="menuAdd">
+	<selectKey keyProperty="sMenuCode" order="BEFORE" resultType="int">
+		select nvl(max(S_MENU_CODE)+1, 1) from S_MENU
+	</selectKey>	
+		insert into S_MENU(S_GROUP_NUM, S_MENU_CODE, S_MENU_NAME, S_MENU_INFO, S_MENU_IMG, S_MENU_PRICE)
+		values (#{sGroupNum}, #{sMenuCode}, #{sMenuName}, #{sMenuInfo}, #{sMenuImg}, #{sMenuPrice})
+	</insert>
+	
+	<update id="updateMenu">
+		update S_MENU
+		<trim prefix="set" suffixOverrides=",">
+			<if test="sMenuName !== null"> S_MENU_NAME = #{sMenuName}, </if>
+			<if test="sMenuInfo !== null"> S_MENU_INFO = #{sMenuInfo}, </if>
+			<if test="sMenuImg !== null"> S_MENU_IMG = #{sMenuImg}, </if>
+			<if test="sMenuPrice !== null"> S_MENU_PRICE = #{sMenuPrice}, </if>
+		</trim>
+		where S_MENU_CODE = #{sMenuCode}
+	</update>
+	
+	<delete id="deleteMenu">
+		delete from S_MENU where S_MENU_CODE = #{sMenuCode}
+	</delete>
+	
+	<delete id="deleteByGroup">
+		delete from S_MENU where S_GROUP_NUM = #{sGroupNum}
+	</delete>
+	
+	<select id="readMenu" resultType="com.example.demo.seller.entity.Smenu">
+		select * from S_MENU where S_MENU_CODE = #{sMenuCode}
+	</select>
+	
+	<select id="groupmenuread" resultType="com.example.demo.seller.dto.SmenuDto$readMenuDto">
+		select * from S_MENU where S_GROUP_NUM = #{sGroupNum}
+	</select>
+</mapper>
